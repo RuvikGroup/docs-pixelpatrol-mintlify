@@ -1,0 +1,165 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "willow",
+  "name": "Pixel Patrol",
+   "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "quickstart",
+              "installation",
+              "architecture"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/teams",
+              "concepts/sites",
+              "concepts/rules",
+              "concepts/moderation",
+              "concepts/webhooks"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/ai-moderation",
+              "features/rule-based-moderation",
+              "features/webhook-notifications",
+              "features/team-management",
+              "features/subscription-billing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/rate-limits",
+              "api-reference/errors"
+            ]
+          },
+          {
+            "group": "Media API",
+            "pages": [
+              "api-reference/media/submit",
+              "api-reference/media/status",
+              "api-reference/media/moderate",
+              "api-reference/media/batch"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-reference/webhooks/overview",
+              "api-reference/webhooks/verification",
+              "api-reference/webhooks/events",
+              "api-reference/webhooks/retry-logic"
+            ]
+          },
+          {
+            "group": "Rule Groups",
+            "pages": [
+              "api-reference/rule-groups/overview",
+              "api-reference/rule-groups/create",
+              "api-reference/rule-groups/update",
+              "api-reference/rule-groups/delete"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Integration Guides",
+            "pages": [
+              "guides/nextjs-integration",
+              "guides/react-integration",
+              "guides/javascript-sdk",
+              "guides/webhook-integration"
+            ]
+          },
+          {
+            "group": "Best Practices",
+            "pages": [
+              "guides/moderation-strategies",
+              "guides/rule-configuration",
+              "guides/performance-optimization",
+              "guides/security-best-practices"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "App",
+          "href": "https://pixelpatrol.app",
+          "icon": "browser"
+        },
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/pixelpatrol",
+          "icon": "github"
+        },
+        {
+          "anchor": "Support",
+          "href": "mailto:support@pixelpatrol.app",
+          "icon": "envelope"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Dashboard",
+        "href": "https://pixelpatrol.app/protected"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://pixelpatrol.app/auth"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/pixelpatrol",
+      "linkedin": "https://linkedin.com/company/pixelpatrol"
+    }
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "analytics": {
+    "posthog": {
+      "apiKey": "YOUR_POSTHOG_API_KEY"
+    }
+  }
+}
