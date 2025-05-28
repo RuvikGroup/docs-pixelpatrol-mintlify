@@ -1,0 +1,167 @@
+---
+title: Rules
+description: Understanding moderation rules and rule-based filtering
+icon: filter
+---
+
+## Overview
+
+Rules define how content is moderated in Pixel Patrol. They can be based on AI analysis results, metadata, or custom conditions, allowing for flexible and powerful content filtering.
+
+## Rule Structure
+
+### Rule Groups
+
+Rules are organized into groups:
+- **Rule Groups**: Container for related rules
+- **Priority**: Execution order (lower numbers = higher priority)
+- **Active Status**: Enable/disable entire groups
+
+### Individual Rules
+
+Each rule consists of:
+- **Name**: Descriptive identifier
+- **Type**: Evaluation method (AI-based, metadata, etc.)
+- **Conditions**: What triggers the rule
+- **Actions**: What happens when triggered
+- **Confidence Threshold**: Minimum confidence for AI rules
+
+## Rule Types
+
+<CardGroup cols={2}>
+  <Card title="AI-Based Rules" icon="brain">
+    Evaluate AI moderation results:
+    - Violence detection
+    - Adult content
+    - Hate speech
+    - Custom AI labels
+  </Card>
+  
+  <Card title="Metadata Rules" icon="tags">
+    Check content metadata:
+    - File type
+    - Source URL
+    - User attributes
+    - Custom metadata
+  </Card>
+  
+  <Card title="Composite Rules" icon="layer-group">
+    Combine multiple conditions:
+    - AND/OR logic
+    - Nested conditions
+    - Complex workflows
+  </Card>
+  
+  <Card title="Threshold Rules" icon="sliders">
+    Numeric comparisons:
+    - Confidence scores
+    - File sizes
+    - Time-based rules
+    - Custom metrics
+  </Card>
+</CardGroup>
+
+## Rule Evaluation
+
+### Evaluation Order
+
+1. Rules are evaluated by group priority
+2. Within groups, rules execute in defined order
+3. First matching rule determines the action
+4. Evaluation stops after first match
+
+### Actions
+
+When a rule matches, it can:
+- **Approve**: Mark content as safe
+- **Reject**: Mark content as inappropriate
+- **Flag**: Send for manual review
+- **Custom**: Trigger specific workflows
+
+## Creating Rules
+
+### Basic AI Rule Example
+
+```json
+{
+  "name": "Block Violent Content",
+  "type": "ai_label",
+  "conditions": {
+    "label": "violence",
+    "confidence": 0.8
+  },
+  "action": "reject"
+}
+```
+
+### Metadata Rule Example
+
+```json
+{
+  "name": "Auto-Approve Verified Users",
+  "type": "metadata",
+  "conditions": {
+    "user.verified": true
+  },
+  "action": "approve"
+}
+```
+
+## Rule Templates
+
+Pixel Patrol provides pre-built templates:
+- **Strict Moderation**: High sensitivity for all content types
+- **Balanced**: Standard moderation levels
+- **Permissive**: Lower thresholds for communities
+- **Custom**: Build your own from scratch
+
+## Best Practices
+
+### Rule Design
+
+1. **Start Simple**: Begin with basic rules and refine
+2. **Test Thoroughly**: Use test media before production
+3. **Monitor Performance**: Review rule effectiveness
+4. **Document Rules**: Maintain clear descriptions
+
+### Performance Optimization
+
+1. **Order by Frequency**: Place common rules first
+2. **Use Groups**: Organize related rules together
+3. **Minimize Complexity**: Simple rules execute faster
+4. **Regular Review**: Remove obsolete rules
+
+## Advanced Features
+
+### Rule Variables
+
+Use dynamic values in rules:
+- `{{site.name}}` - Current site name
+- `{{user.id}}` - Submitting user ID
+- `{{media.type}}` - Content type
+- `{{timestamp}}` - Submission time
+
+### Rule Conditions
+
+Complex condition syntax:
+```json
+{
+  "AND": [
+    {"label": "violence", "confidence": {">=": 0.7}},
+    {"metadata.source": {"contains": "user-generated"}}
+  ]
+}
+```
+
+## Debugging Rules
+
+1. **Test Mode**: Evaluate without applying actions
+2. **Rule Logs**: Track which rules matched
+3. **Simulation**: Test rules against sample content
+4. **Analytics**: Monitor rule performance metrics
+
+## Related Concepts
+
+- [Rule-Based Moderation](/features/rule-based-moderation) - Advanced rule features
+- [AI Moderation](/features/ai-moderation) - AI-powered rule capabilities
+- [Moderation](/concepts/moderation) - Overall moderation process

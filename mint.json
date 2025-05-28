@@ -86,6 +86,56 @@
         ]
       },
       {
+        "tab": "Tutorials",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "tutorials/index",
+              "tutorials/getting-started/first-team",
+              "tutorials/getting-started/first-site",
+              "tutorials/getting-started/first-moderation"
+            ]
+          },
+          {
+            "group": "Media Moderation",
+            "pages": [
+              "tutorials/media-moderation/submitting-media",
+              "tutorials/media-moderation/review-queue",
+              "tutorials/media-moderation/moderation-actions",
+              "tutorials/media-moderation/moderation-history"
+            ]
+          },
+          {
+            "group": "Team Management",
+            "pages": [
+              "tutorials/team-management/creating-teams",
+              "tutorials/team-management/inviting-members",
+              "tutorials/team-management/managing-roles",
+              "tutorials/team-management/switching-teams"
+            ]
+          },
+          {
+            "group": "Rules and Filtering",
+            "pages": [
+              "tutorials/rules-and-filtering/understanding-rules",
+              "tutorials/rules-and-filtering/creating-rule-groups",
+              "tutorials/rules-and-filtering/configuring-rules",
+              "tutorials/rules-and-filtering/rule-templates"
+            ]
+          },
+          {
+            "group": "Webhooks and API",
+            "pages": [
+              "tutorials/webhooks-and-api/setting-up-webhooks",
+              "tutorials/webhooks-and-api/webhook-verification",
+              "tutorials/webhooks-and-api/api-integration",
+              "tutorials/webhooks-and-api/testing-webhooks"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Guides",
         "groups": [
           {

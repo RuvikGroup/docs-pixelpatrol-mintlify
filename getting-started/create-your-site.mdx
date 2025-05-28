@@ -1,0 +1,358 @@
+---
+title: 'Create Your Site'
+description: 'Step-by-step guide to adding your first website or application'
+icon: 'globe'
+---
+
+# Creating Your First Site
+
+Sites are the core of PixelPatrol - they represent the websites or applications you want to protect with content moderation. This guide will walk you through creating your first site.
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+<CheckGroup>
+  <Check>Logged into PixelPatrol</Check>
+  <Check>Created or joined a team</Check>
+  <Check>The URL of the website or application you want to moderate</Check>
+</CheckGroup>
+
+## Step 1: Navigate to Sites
+
+1. From the dashboard, click **Sites** in the navigation menu
+2. You'll see the Sites overview page
+3. Click the **"Add New Site"** button
+
+![Sites Overview Page](screenshots/sites-overview.png)
+
+## Step 2: Basic Site Information
+
+Fill in the basic details for your site:
+
+<ParamField path="name" type="string" required>
+  A friendly name for your site (e.g., "Main Website", "Mobile App")
+</ParamField>
+
+<ParamField path="url" type="string" required>
+  The full URL of your site (e.g., `https://example.com`)
+</ParamField>
+
+<ParamField path="description" type="string">
+  Optional description to help team members understand this site's purpose
+</ParamField>
+
+### Example Configuration
+
+```json
+{
+  "name": "Community Forum",
+  "url": "https://forum.example.com",
+  "description": "Our main community discussion forum requiring active moderation"
+}
+```
+
+<Note>
+The URL is used for webhook callbacks and site identification. Make sure it's accessible from the internet if you plan to use webhooks.
+</Note>
+
+## Step 3: Configure Moderation Settings
+
+### Select Moderation Type
+
+Choose how content will be moderated for this site:
+
+<Tabs>
+  <Tab title="AI Moderation">
+    **Automated AI-Powered Moderation**
+    
+    Best for: High-volume content, real-time moderation needs
+    
+    - Content is automatically analyzed by AI
+    - Instant moderation decisions
+    - Configurable confidence thresholds
+    
+    <Info>
+    AI moderation uses advanced models to detect inappropriate content, spam, and policy violations.
+    </Info>
+  </Tab>
+  
+  <Tab title="Rule-Based">
+    **Custom Rule-Based Moderation**
+    
+    Best for: Specific policy requirements, keyword filtering
+    
+    - Define custom rules and patterns
+    - Regex support for complex matching
+    - Combine multiple conditions
+    
+    [Learn more about rules →](/features/rules)
+  </Tab>
+  
+  <Tab title="Hybrid">
+    **Combined AI + Rules**
+    
+    Best for: Maximum accuracy and control
+    
+    - AI provides baseline moderation
+    - Rules handle specific cases
+    - Best of both approaches
+  </Tab>
+</Tabs>
+
+### Set Confidence Threshold
+
+If using AI moderation, configure the confidence threshold:
+
+<Slider>
+  <SliderTrack>
+    <SliderRange />
+  </SliderTrack>
+  <SliderThumb />
+</Slider>
+
+- **Low (60-70%)**: More content flagged, fewer false negatives
+- **Medium (70-85%)**: Balanced approach
+- **High (85-95%)**: Only very confident violations flagged
+
+<Tip>
+Start with a medium threshold (75%) and adjust based on your moderation results.
+</Tip>
+
+## Step 4: Webhook Configuration (Optional)
+
+Webhooks allow PixelPatrol to notify your application when moderation decisions are made.
+
+### Enable Webhooks
+
+<Steps>
+  <Step title="Toggle Webhooks On">
+    Click the webhook toggle to enable webhook notifications
+  </Step>
+  
+  <Step title="Enter Webhook URL">
+    Provide your endpoint URL that will receive moderation results
+    
+    ```
+    https://api.example.com/webhooks/moderation
+    ```
+  </Step>
+  
+  <Step title="Generate Webhook Secret">
+    Click "Generate Secret" to create a secure webhook signing key
+    
+    <Warning>
+    Save this secret immediately - it won't be shown again!
+    </Warning>
+  </Step>
+</Steps>
+
+### Webhook Payload Example
+
+Your webhook endpoint will receive POST requests with this structure:
+
+```json
+{
+  "event": "moderation.completed",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": {
+    "media_id": "123e4567-e89b-12d3-a456-426614174000",
+    "status": "flagged",
+    "confidence": 0.89,
+    "categories": ["violence", "explicit"],
+    "metadata": {
+      "user_id": "user123",
+      "context": "forum_post"
+    }
+  }
+}
+```
+
+[Learn more about webhook integration →](/api-reference/webhooks)
+
+## Step 5: Rule Group Assignment (Optional)
+
+If you have existing rule groups, you can assign them to your site:
+
+1. In the "Rule Groups" section, click "Assign Rule Groups"
+2. Select the rule groups you want to apply
+3. Order them by priority (rules are evaluated top to bottom)
+
+![Rule Group Assignment](screenshots/rule-group-assignment.png)
+
+<Info>
+Rule groups allow you to reuse moderation rules across multiple sites. You can create rule groups later if you don't have any yet.
+</Info>
+
+## Step 6: Review and Create
+
+Before creating your site, review your configuration:
+
+<Checklist>
+  - [ ] Site name and URL are correct
+  - [ ] Moderation type is appropriate for your content
+  - [ ] Confidence threshold is set (if using AI)
+  - [ ] Webhook URL is accessible (if enabled)
+  - [ ] Webhook secret is saved securely
+  - [ ] Rule groups are assigned (if applicable)
+</Checklist>
+
+Click **"Create Site"** to save your configuration.
+
+## Step 7: Get Your API Key
+
+After creating your site, you'll receive an API key:
+
+1. Copy the API key shown in the success message
+2. Store it securely in your application's environment variables
+3. You can always retrieve it later from the site settings
+
+```bash
+# Example .env file
+PIXELPATROL_API_KEY=pp_live_1234567890abcdef
+PIXELPATROL_SITE_ID=site_abc123
+```
+
+## Testing Your Site
+
+Now that your site is created, let's test the integration:
+
+### Quick Test
+
+1. Navigate to your site's detail page
+2. Click "Test Moderation"
+3. Upload a test image or enter test text
+4. View the moderation results
+
+### API Test
+
+Test your integration with a simple API call:
+
+```bash
+curl -X POST https://api.pixelpatrol.com/v1/moderate \
+  -H "Authorization: Bearer pp_live_1234567890abcdef" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "This is a test message",
+    "type": "text",
+    "metadata": {
+      "user_id": "test_user"
+    }
+  }'
+```
+
+## Managing Your Site
+
+After creation, you can:
+
+<CardGroup cols={2}>
+  <Card title="View Analytics" icon="chart-line">
+    Monitor moderation statistics and trends
+  </Card>
+  
+  <Card title="Edit Settings" icon="gear">
+    Update configuration, thresholds, and webhooks
+  </Card>
+  
+  <Card title="View Logs" icon="scroll">
+    Review webhook delivery logs and errors
+  </Card>
+  
+  <Card title="Manage Rules" icon="scale-balanced">
+    Add or modify rule groups for this site
+  </Card>
+</CardGroup>
+
+## Common Configuration Patterns
+
+### E-commerce Site
+
+```json
+{
+  "name": "Product Reviews",
+  "moderation_type": "hybrid",
+  "confidence_threshold": 0.80,
+  "rule_groups": ["spam_detection", "competitor_mentions"]
+}
+```
+
+### Social Platform
+
+```json
+{
+  "name": "User Posts",
+  "moderation_type": "ai",
+  "confidence_threshold": 0.75,
+  "webhook_enabled": true,
+  "real_time": true
+}
+```
+
+### Corporate Website
+
+```json
+{
+  "name": "Contact Forms",
+  "moderation_type": "rules",
+  "rule_groups": ["profanity_filter", "spam_detection"]
+}
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhook not receiving events">
+    - Verify your webhook URL is publicly accessible
+    - Check that SSL certificate is valid (HTTPS required)
+    - Review webhook logs in the site detail page
+    - Ensure your endpoint returns 200 OK status
+  </Accordion>
+  
+  <Accordion title="API key not working">
+    - Confirm you're using the correct API key
+    - Check that the site is active
+    - Verify your subscription has available moderations
+    - Try regenerating the API key in settings
+  </Accordion>
+  
+  <Accordion title="Moderation results seem incorrect">
+    - Adjust the confidence threshold
+    - Review and update your rule groups
+    - Check if content type matches configuration
+    - Contact support with example content
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Site Organization Tips:**
+
+1. **Use descriptive names**: "Mobile App - User Comments" instead of "App 1"
+2. **Group by purpose**: Create separate sites for different content types
+3. **Document webhook endpoints**: Keep track of which endpoints handle which sites
+4. **Test thoroughly**: Always test moderation settings with real content samples
+5. **Monitor regularly**: Check analytics to fine-tune your configuration
+</Tip>
+
+## Next Steps
+
+Great job! Your site is now ready to moderate content. Here's what to do next:
+
+<CardGroup>
+  <Card title="Set Up Your Team" icon="users" href="/getting-started/team-setup">
+    Invite team members to help manage moderation
+  </Card>
+  
+  <Card title="Create Custom Rules" icon="scale-balanced" href="/features/rules">
+    Define specific moderation rules for your content
+  </Card>
+  
+  <Card title="Integrate the API" icon="code" href="/api-reference">
+    Start sending content for moderation
+  </Card>
+  
+  <Card title="Choose a Plan" icon="credit-card" href="/getting-started/choose-a-plan">
+    Select the right subscription for your volume
+  </Card>
+</CardGroup>

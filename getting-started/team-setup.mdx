@@ -1,0 +1,350 @@
+---
+title: 'Team Setup'
+description: 'Invite team members and manage roles for collaborative moderation'
+icon: 'users'
+---
+
+# Setting Up Your Team
+
+PixelPatrol is designed for teams. Whether you're a small startup or a large enterprise, proper team setup ensures smooth collaboration and appropriate access control.
+
+## Understanding Team Roles
+
+Before inviting team members, understand the three role types:
+
+<CardGroup cols={3}>
+  <Card title="Owner" icon="crown">
+    **Full Control**
+    - Manage billing & subscription
+    - Delete team
+    - Transfer ownership
+    - All admin privileges
+    
+    <Warning>
+    Only one owner per team
+    </Warning>
+  </Card>
+  
+  <Card title="Admin" icon="user-shield">
+    **Management Access**
+    - Invite/remove members
+    - Manage sites & rules
+    - View all content
+    - Cannot access billing
+  </Card>
+  
+  <Card title="Member" icon="user">
+    **Operational Access**
+    - Review moderation queue
+    - View analytics
+    - Cannot change settings
+    - Read-only configuration
+  </Card>
+</CardGroup>
+
+## Step 1: Access Team Management
+
+1. Click **Team** in the main navigation
+2. You'll see the team overview page with current members
+3. Click **"Invite Team Member"** to add new people
+
+![Team Management Page](screenshots/team-management.png)
+
+## Step 2: Invite Team Members
+
+### Sending Invitations
+
+Fill out the invitation form:
+
+<ParamField path="email" type="string" required>
+  Email address of the person you're inviting
+</ParamField>
+
+<ParamField path="role" type="select" required>
+  Select the appropriate role:
+  - **Member**: For moderators and reviewers
+  - **Admin**: For team leads and managers
+  - **Owner**: Only when transferring ownership
+</ParamField>
+
+<ParamField path="message" type="string">
+  Optional personalized message to include in the invitation email
+</ParamField>
+
+<Tabs>
+  <Tab title="Single Invitation">
+    ```json
+    {
+      "email": "sarah@example.com",
+      "role": "admin",
+      "message": "Welcome to our moderation team! Looking forward to working with you."
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Bulk Invitations">
+    To invite multiple people:
+    
+    1. Click "Invite Multiple"
+    2. Enter emails separated by commas
+    3. All will receive the same role
+    
+    ```
+    john@example.com, jane@example.com, alex@example.com
+    ```
+  </Tab>
+</Tabs>
+
+### What Happens Next
+
+1. **Email Sent**: Invitee receives an email with a secure link
+2. **Link Valid for 7 Days**: They must accept within this timeframe
+3. **Account Creation**: If new to PixelPatrol, they'll create an account
+4. **Team Access**: Once accepted, they immediately gain access
+
+<Info>
+Invitation emails come from `noreply@pixelpatrol.com`. Ask invitees to check spam folders if not received.
+</Info>
+
+## Step 3: Manage Pending Invitations
+
+Track and manage sent invitations:
+
+### Viewing Pending Invitations
+
+In the "Pending Invitations" section, you can see:
+- Email address invited
+- Role assigned
+- Date sent
+- Time remaining
+
+![Pending Invitations](screenshots/pending-invitations.png)
+
+### Actions You Can Take
+
+<Steps>
+  <Step title="Resend Invitation">
+    Click "Resend" if the original email was missed
+  </Step>
+  
+  <Step title="Cancel Invitation">
+    Click "Cancel" to revoke an invitation before acceptance
+  </Step>
+  
+  <Step title="Copy Invitation Link">
+    Get a direct link to share via other channels
+  </Step>
+</Steps>
+
+## Step 4: Manage Existing Members
+
+### Viewing Team Members
+
+The team roster shows:
+- Name and email
+- Current role
+- Join date
+- Last active
+- Status (active/inactive)
+
+### Changing Member Roles
+
+<Note>
+Only team owners and admins can change roles.
+</Note>
+
+1. Find the team member in the list
+2. Click the role dropdown next to their name
+3. Select the new role
+4. Confirm the change
+
+**Role Change Effects:**
+- **Immediate**: Changes take effect instantly
+- **Logged**: All role changes are logged for audit
+- **Notified**: Member receives email about role change
+
+### Removing Team Members
+
+<Warning>
+Removing a member immediately revokes all access. This action cannot be undone.
+</Warning>
+
+1. Click the "..." menu next to the member
+2. Select "Remove from team"
+3. Confirm the removal
+4. Member loses access immediately
+
+## Step 5: Team Settings
+
+### Configure Team Preferences
+
+Access additional team settings:
+
+<AccordionGroup>
+  <Accordion title="Team Profile">
+    - **Team Name**: Display name for your organization
+    - **Team Logo**: Upload a logo for branding
+    - **Description**: Brief description of your team
+  </Accordion>
+  
+  <Accordion title="Security Settings">
+    - **Two-Factor Authentication**: Require 2FA for all members
+    - **Session Timeout**: Set automatic logout duration
+    - **IP Restrictions**: Limit access to specific IP ranges
+  </Accordion>
+  
+  <Accordion title="Notification Preferences">
+    - **Admin Alerts**: Who receives important notifications
+    - **Daily Summaries**: Enable/disable daily reports
+    - **Webhook Failures**: Alert preferences for integration issues
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices for Team Management
+
+### Role Assignment Guidelines
+
+<Tip>
+**Choose roles based on responsibilities:**
+
+- **Owner**: CEO, CTO, or billing manager
+- **Admin**: Team leads, project managers, head of moderation
+- **Member**: Content moderators, support staff, reviewers
+</Tip>
+
+### Security Recommendations
+
+1. **Limit Admin Access**: Only give admin role when necessary
+2. **Regular Audits**: Review team members quarterly
+3. **Remove Inactive Users**: Clean up members who've left
+4. **Use Strong Passwords**: Encourage or enforce password policies
+
+### Onboarding New Members
+
+Create a smooth onboarding experience:
+
+<Steps>
+  <Step title="Send Welcome Message">
+    Include helpful context in your invitation:
+    - What sites they'll be moderating
+    - Expected responsibilities
+    - Team communication channels
+  </Step>
+  
+  <Step title="Prepare Documentation">
+    Have ready:
+    - Moderation guidelines
+    - Escalation procedures
+    - Tool tutorials
+  </Step>
+  
+  <Step title="Schedule Training">
+    Plan for:
+    - Platform walkthrough
+    - Role-specific training
+    - Q&A session
+  </Step>
+</Steps>
+
+## Common Team Structures
+
+### Small Team (2-5 people)
+
+```
+Owner (1) - Handles billing and overall management
+Admins (1-2) - Manage day-to-day operations
+Members (1-2) - Focus on content review
+```
+
+### Medium Team (6-20 people)
+
+```
+Owner (1) - Executive oversight
+Admins (2-4) - Department heads
+Members (3-15) - Specialized moderators
+```
+
+### Large Team (20+ people)
+
+```
+Owner (1) - C-level executive
+Admins (5-10) - Team leads for different regions/products
+Members (15+) - Dedicated moderation staff
+```
+
+## Troubleshooting Team Issues
+
+<AccordionGroup>
+  <Accordion title="Invitation email not received">
+    1. Check spam/junk folders
+    2. Verify email address is correct
+    3. Resend invitation
+    4. Use direct invitation link
+    5. Whitelist `noreply@pixelpatrol.com`
+  </Accordion>
+  
+  <Accordion title="Can't change member role">
+    - Verify you have owner or admin role
+    - Cannot change owner role (must transfer ownership)
+    - Cannot demote yourself
+    - Check if member has accepted invitation
+  </Accordion>
+  
+  <Accordion title="Member can't access features">
+    - Confirm their role has appropriate permissions
+    - Check if invitation was fully accepted
+    - Verify no IP restrictions blocking access
+    - Have them log out and back in
+  </Accordion>
+</AccordionGroup>
+
+## Team Collaboration Features
+
+### Shared Resources
+
+All team members can access:
+- Moderation queue
+- Site analytics
+- Rule configurations (read-only for members)
+- Team activity logs
+
+### Communication Tools
+
+<Info>
+PixelPatrol integrates with popular communication platforms for alerts and notifications.
+</Info>
+
+- **Slack Integration**: Real-time moderation alerts
+- **Email Digests**: Daily/weekly summaries
+- **In-App Notes**: Leave comments on moderation decisions
+
+## Scaling Your Team
+
+As your moderation needs grow:
+
+1. **Add Specialized Roles**: Create focused teams for different content types
+2. **Implement Shifts**: Use member availability for 24/7 coverage
+3. **Define Hierarchies**: Establish clear escalation paths
+4. **Track Performance**: Use analytics to optimize team efficiency
+
+## Next Steps
+
+Now that your team is set up, you're ready to scale your moderation efforts:
+
+<CardGroup>
+  <Card title="Choose a Plan" icon="credit-card" href="/getting-started/choose-a-plan">
+    Select a subscription that fits your team size
+  </Card>
+  
+  <Card title="Create Moderation Rules" icon="scale-balanced" href="/features/rules">
+    Define team-wide moderation policies
+  </Card>
+  
+  <Card title="Set Up Workflows" icon="diagram-project" href="/features/workflows">
+    Create efficient moderation processes
+  </Card>
+  
+  <Card title="View Analytics" icon="chart-line" href="/features/analytics">
+    Monitor team performance and metrics
+  </Card>
+</CardGroup>
