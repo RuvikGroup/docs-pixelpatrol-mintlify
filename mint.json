@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "willow",
+  "theme": "mint",
   "name": "Pixel Patrol",
    "colors": {
     "primary": "#16A34A",
@@ -59,7 +59,7 @@
           {
             "group": "Media API",
             "pages": [
-              "api-reference/media/submit",
+              "api-reference/submit-media",
               "api-reference/media/status",
               "api-reference/media/moderate",
               "api-reference/media/batch"
@@ -141,6 +141,7 @@
           {
             "group": "Integration Guides",
             "pages": [
+              "guides/api-integration",
               "guides/nextjs-integration",
               "guides/react-integration",
               "guides/javascript-sdk",
@@ -163,7 +164,7 @@
       "anchors": [
         {
           "anchor": "App",
-          "href": "https://pixelpatrol.app",
+          "href": "https://app.pixelpatrol.net",
           "icon": "browser"
         },
         {
@@ -173,7 +174,7 @@
         },
         {
           "anchor": "Support",
-          "href": "mailto:support@pixelpatrol.app",
+          "href": "mailto:support@pixelpatrol.net",
           "icon": "envelope"
         }
       ]
@@ -187,29 +188,19 @@
     "links": [
       {
         "label": "Dashboard",
-        "href": "https://pixelpatrol.app/protected"
+        "href": "https://app.pixelpatrol.net/protected"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://pixelpatrol.app/auth"
+      "href": "https://app.pixelpatrol.net/auth"
     }
   },
   "footer": {
     "socials": {
       "github": "https://github.com/pixelpatrol",
       "linkedin": "https://linkedin.com/company/pixelpatrol"
-    }
-  },
-  "feedback": {
-    "thumbsRating": true,
-    "suggestEdit": true,
-    "raiseIssue": true
-  },
-  "analytics": {
-    "posthog": {
-      "apiKey": "YOUR_POSTHOG_API_KEY"
     }
   }
 }

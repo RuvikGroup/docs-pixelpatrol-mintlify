@@ -1,0 +1,580 @@
+---
+title: 'API Integration Guide'
+description: 'Complete guide to integrating Pixel Patrol API into your application'
+icon: 'code'
+---
+
+## Overview
+
+This guide walks you through integrating Pixel Patrol's API into your application, from initial setup to advanced usage patterns.
+
+## Getting Started
+
+### 1. Obtain Your API Credentials
+
+After creating a site in your Pixel Patrol dashboard:
+
+1. Navigate to your site settings
+2. Copy your site API key (format: `site_xxxxxxxxxxxxxxxxxxxx`)
+3. Store it securely in your environment variables
+
+```bash
+# .env file
+PIXELPATROL_API_KEY=site_xxxxxxxxxxxxxxxxxxxx
+PIXELPATROL_API_URL=https://your-supabase-url.supabase.co/functions/v1
+```
+
+### 2. Basic API Client Setup
+
+<CodeGroup>
+
+```javascript JavaScript
+class PixelPatrolClient {
+  constructor(apiKey, baseUrl) {
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl || process.env.PIXELPATROL_API_URL;
+  }
+
+  async submitMedia(data) {
+    const response = await fetch(`${this.baseUrl}/submit-media`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        api_key: this.apiKey,
+        ...data
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async getMediaStatus(mediaId) {
+    const response = await fetch(`${this.baseUrl}/get-media-status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        api_key: this.apiKey,
+        media_id: mediaId
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+}
+
+// Initialize client
+const pixelPatrol = new PixelPatrolClient(process.env.PIXELPATROL_API_KEY);
+```
+
+```python Python
+import os
+import requests
+from typing import Dict, Any, Optional
+
+class PixelPatrolClient:
+    def __init__(self, api_key: str, base_url: Optional[str] = None):
+        self.api_key = api_key
+        self.base_url = base_url or os.environ.get('PIXELPATROL_API_URL')
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json'
+        })
+    
+    def submit_media(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Submit media for moderation"""
+        payload = {
+            'api_key': self.api_key,
+            **data
+        }
+        
+        response = self.session.post(
+            f'{self.base_url}/submit-media',
+            json=payload
+        )
+        
+        if not response.ok:
+            error = response.json()
+            raise Exception(error.get('error', f'HTTP {response.status_code}'))
+        
+        return response.json()
+    
+    def get_media_status(self, media_id: str) -> Dict[str, Any]:
+        """Check moderation status"""
+        payload = {
+            'api_key': self.api_key,
+            'media_id': media_id
+        }
+        
+        response = self.session.post(
+            f'{self.base_url}/get-media-status',
+            json=payload
+        )
+        
+        if not response.ok:
+            error = response.json()
+            raise Exception(error.get('error', f'HTTP {response.status_code}'))
+        
+        return response.json()
+
+# Initialize client
+pixel_patrol = PixelPatrolClient(os.environ['PIXELPATROL_API_KEY'])
+```
+
+</CodeGroup>
+
+## Common Integration Patterns
+
+### 1. User-Generated Content (UGC)
+
+For platforms with user uploads:
+
+```javascript
+// When user uploads content
+async function handleUserUpload(userId, imageUrl, context) {
+  try {
+    // Submit for moderation
+    const result = await pixelPatrol.submitMedia({
+      content_url: imageUrl,
+      app_media_id: `user-${userId}-${Date.now()}`,
+      submitted_by: userId,
+      metadata: {
+        context: context, // 'profile_photo', 'post_image', etc.
+        upload_timestamp: new Date().toISOString()
+      }
+    });
+
+    // Store media ID for tracking
+    await database.save({
+      userId,
+      mediaId: result.id,
+      pixelPatrolId: result.id,
+      status: 'pending_moderation'
+    });
+
+    return {
+      success: true,
+      message: 'Content submitted for review',
+      mediaId: result.id
+    };
+  } catch (error) {
+    console.error('Moderation submission failed:', error);
+    // Decide whether to block upload or allow with manual review
+    return {
+      success: false,
+      error: 'Moderation service unavailable'
+    };
+  }
+}
+```
+
+### 2. Text Content Moderation
+
+For comments, posts, or messages:
+
+```javascript
+async function moderateTextContent(text, userId, context) {
+  try {
+    const result = await pixelPatrol.submitMedia({
+      body: text,
+      app_media_id: `text-${context}-${Date.now()}`,
+      submitted_by: userId,
+      metadata: {
+        content_type: 'text',
+        context: context, // 'comment', 'post', 'message'
+        character_count: text.length
+      }
+    });
+
+    // For text, you might want to wait for quick moderation
+    if (context === 'comment') {
+      // Poll for quick result (with timeout)
+      const status = await waitForModeration(result.id, 5000); // 5 second timeout
+      
+      if (status.action === 'block') {
+        return {
+          allowed: false,
+          reason: 'Content violates community guidelines'
+        };
+      }
+    }
+
+    return {
+      allowed: true,
+      mediaId: result.id
+    };
+  } catch (error) {
+    console.error('Text moderation failed:', error);
+    // Fallback strategy
+    return {
+      allowed: true, // or false, depending on your policy
+      requiresReview: true
+    };
+  }
+}
+```
+
+### 3. Batch Processing
+
+For bulk content imports or migrations:
+
+```javascript
+async function processBatchContent(items) {
+  const results = [];
+  const batchSize = 10; // Process in batches to avoid rate limits
+  
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    
+    // Submit batch concurrently
+    const promises = batch.map(item => 
+      pixelPatrol.submitMedia({
+        content_url: item.url,
+        app_media_id: item.id,
+        metadata: item.metadata
+      }).catch(error => ({
+        error: error.message,
+        item: item
+      }))
+    );
+    
+    const batchResults = await Promise.all(promises);
+    results.push(...batchResults);
+    
+    // Rate limiting - wait between batches
+    if (i + batchSize < items.length) {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+    }
+  }
+  
+  return results;
+}
+```
+
+## Webhook Integration
+
+### Setting Up Webhook Handler
+
+```javascript
+import crypto from 'crypto';
+
+// Webhook handler
+async function handlePixelPatrolWebhook(req, res) {
+  // Verify signature
+  const signature = req.headers['x-webhook-signature'];
+  const payload = JSON.stringify(req.body);
+  
+  const expectedSignature = 'sha256=' + crypto
+    .createHmac('sha256', process.env.PIXELPATROL_WEBHOOK_SECRET)
+    .update(payload)
+    .digest('hex');
+  
+  if (signature !== expectedSignature) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+  
+  // Process event
+  const event = req.body;
+  
+  switch (event.event) {
+    case 'media.moderated':
+      await handleModerationComplete(event.data);
+      break;
+    
+    case 'media.updated':
+      await handleMediaUpdate(event.data);
+      break;
+    
+    default:
+      console.log('Unhandled event type:', event.event);
+  }
+  
+  // Always respond quickly
+  res.status(200).json({ received: true });
+}
+
+// Handle moderation completion
+async function handleModerationComplete(data) {
+  const { media_id, status, ai_results, applied_rules } = data;
+  
+  // Update your database
+  await database.updateMedia({
+    pixelPatrolId: media_id,
+    moderationStatus: status,
+    aiResults: ai_results,
+    appliedRules: applied_rules,
+    moderatedAt: new Date()
+  });
+  
+  // Take action based on status
+  if (status === 'rejected' || status === 'flagged') {
+    await handleRejectedContent(media_id);
+  } else if (status === 'approved') {
+    await publishContent(media_id);
+  }
+}
+```
+
+## Error Handling
+
+### Comprehensive Error Handling
+
+```javascript
+class PixelPatrolError extends Error {
+  constructor(message, code, details) {
+    super(message);
+    this.code = code;
+    this.details = details;
+  }
+}
+
+async function submitWithErrorHandling(data) {
+  try {
+    return await pixelPatrol.submitMedia(data);
+  } catch (error) {
+    // Parse error response
+    if (error.message.includes('Invalid API Key')) {
+      throw new PixelPatrolError(
+        'Authentication failed',
+        'AUTH_FAILED',
+        { originalError: error.message }
+      );
+    }
+    
+    if (error.message.includes('Moderation limit exceeded')) {
+      throw new PixelPatrolError(
+        'Moderation limit reached',
+        'LIMIT_EXCEEDED',
+        { 
+          type: 'moderation_limit',
+          suggestion: 'Upgrade your plan or wait for limit reset'
+        }
+      );
+    }
+    
+    if (error.message.includes('Team has no active subscription')) {
+      throw new PixelPatrolError(
+        'Subscription required',
+        'NO_SUBSCRIPTION',
+        { suggestion: 'Please activate a subscription' }
+      );
+    }
+    
+    // Generic error
+    throw new PixelPatrolError(
+      'Moderation service error',
+      'SERVICE_ERROR',
+      { originalError: error.message }
+    );
+  }
+}
+```
+
+### Retry Logic
+
+```javascript
+async function submitWithRetry(data, maxRetries = 3) {
+  let lastError;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await pixelPatrol.submitMedia(data);
+    } catch (error) {
+      lastError = error;
+      
+      // Don't retry on client errors
+      if (error.message.includes('Invalid') || 
+          error.message.includes('limit exceeded')) {
+        throw error;
+      }
+      
+      // Exponential backoff
+      const delay = Math.pow(2, attempt) * 1000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError;
+}
+```
+
+## Performance Optimization
+
+### Caching Moderation Results
+
+```javascript
+const moderationCache = new Map();
+
+async function getCachedModeration(contentHash) {
+  // Check cache first
+  const cached = moderationCache.get(contentHash);
+  if (cached && cached.timestamp > Date.now() - 3600000) { // 1 hour cache
+    return cached.result;
+  }
+  
+  // If not cached, submit for moderation
+  const result = await pixelPatrol.submitMedia({
+    content_url: contentUrl,
+    app_media_id: contentHash,
+    metadata: { 
+      content_hash: contentHash 
+    }
+  });
+  
+  // Cache the result
+  moderationCache.set(contentHash, {
+    result: result,
+    timestamp: Date.now()
+  });
+  
+  return result;
+}
+```
+
+### Connection Pooling
+
+```javascript
+// Use connection pooling for better performance
+import { Agent } from 'https';
+
+const httpsAgent = new Agent({
+  keepAlive: true,
+  maxSockets: 10
+});
+
+// Use with fetch
+const response = await fetch(url, {
+  agent: httpsAgent,
+  // ... other options
+});
+```
+
+## Testing
+
+### Unit Testing
+
+```javascript
+import { jest } from '@jest/globals';
+
+// Mock the API client
+jest.mock('./pixelPatrolClient');
+
+describe('Content Moderation', () => {
+  it('should handle approved content', async () => {
+    // Mock successful moderation
+    pixelPatrol.submitMedia.mockResolvedValue({
+      id: 'media_123',
+      status: 'pending'
+    });
+    
+    const result = await handleUserUpload('user123', 'https://example.com/image.jpg', 'profile');
+    
+    expect(result.success).toBe(true);
+    expect(result.mediaId).toBe('media_123');
+  });
+  
+  it('should handle rate limits gracefully', async () => {
+    // Mock rate limit error
+    pixelPatrol.submitMedia.mockRejectedValue(
+      new Error('Moderation limit exceeded')
+    );
+    
+    const result = await handleUserUpload('user123', 'https://example.com/image.jpg', 'profile');
+    
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('limit');
+  });
+});
+```
+
+### Integration Testing
+
+```javascript
+// Test webhook handling
+describe('Webhook Handler', () => {
+  it('should verify webhook signatures', async () => {
+    const payload = {
+      event: 'media.moderated',
+      data: { media_id: 'test_123' }
+    };
+    
+    const signature = 'sha256=' + crypto
+      .createHmac('sha256', 'test_secret')
+      .update(JSON.stringify(payload))
+      .digest('hex');
+    
+    const req = {
+      headers: { 'x-webhook-signature': signature },
+      body: payload
+    };
+    
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+    
+    await handlePixelPatrolWebhook(req, res);
+    
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+});
+```
+
+## Monitoring & Logging
+
+### Structured Logging
+
+```javascript
+import winston from 'winston';
+
+const logger = winston.createLogger({
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'pixelpatrol.log' })
+  ]
+});
+
+// Log all API interactions
+async function submitMediaWithLogging(data) {
+  const startTime = Date.now();
+  
+  try {
+    const result = await pixelPatrol.submitMedia(data);
+    
+    logger.info('Media submitted successfully', {
+      mediaId: result.id,
+      appMediaId: data.app_media_id,
+      duration: Date.now() - startTime
+    });
+    
+    return result;
+  } catch (error) {
+    logger.error('Media submission failed', {
+      error: error.message,
+      appMediaId: data.app_media_id,
+      duration: Date.now() - startTime
+    });
+    
+    throw error;
+  }
+}
+```
+
+## Next Steps
+
+- [Webhook Setup Guide](/tutorials/webhooks-and-api/setting-up-webhooks)
+- [API Reference](/api-reference/submit-media)
+- [Security Best Practices](/guides/security-best-practices)

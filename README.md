@@ -1,6 +1,6 @@
 # Pixel Patrol Documentation
 
-This repository contains the official documentation for [Pixel Patrol](https://pixelpatrol.app), an AI-powered media moderation SaaS platform.
+This repository contains the official documentation for [Pixel Patrol](https://app.pixelpatrol.net), an AI-powered media moderation SaaS platform.
 
 ## 📚 Documentation Structure
 
@@ -55,7 +55,7 @@ Changes pushed to the main branch will be automatically deployed via Mintlify's 
 
 ## 📞 Support
 
-For questions about the documentation, please contact support@pixelpatrol.app.
+For questions about the documentation, please contact support@pixelpatrol.net.
 
 ## Troubleshooting
 

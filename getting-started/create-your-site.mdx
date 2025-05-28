@@ -199,18 +199,17 @@ Before creating your site, review your configuration:
 
 Click **"Create Site"** to save your configuration.
 
-## Step 7: Get Your API Key
+## Step 7: Get Your Site Key
 
-After creating your site, you'll receive an API key:
+After creating your site, you'll receive a site key:
 
-1. Copy the API key shown in the success message
+1. Copy the site key shown in the success message
 2. Store it securely in your application's environment variables
 3. You can always retrieve it later from the site settings
 
 ```bash
 # Example .env file
-PIXELPATROL_API_KEY=pp_live_1234567890abcdef
-PIXELPATROL_SITE_ID=site_abc123
+PIXELPATROL_SITE_KEY=site_xxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Testing Your Site
@@ -229,12 +228,12 @@ Now that your site is created, let's test the integration:
 Test your integration with a simple API call:
 
 ```bash
-curl -X POST https://api.pixelpatrol.com/v1/moderate \
-  -H "Authorization: Bearer pp_live_1234567890abcdef" \
+curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
-    "content": "This is a test message",
-    "type": "text",
+    "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+    "body": "This is a test message",
+    "app_media_id": "test-123",
     "metadata": {
       "user_id": "test_user"
     }
@@ -308,11 +307,11 @@ After creation, you can:
     - Ensure your endpoint returns 200 OK status
   </Accordion>
   
-  <Accordion title="API key not working">
-    - Confirm you're using the correct API key
+  <Accordion title="Site key not working">
+    - Confirm you're using the correct site key
     - Check that the site is active
     - Verify your subscription has available moderations
-    - Try regenerating the API key in settings
+    - Try regenerating the site key in settings
   </Accordion>
   
   <Accordion title="Moderation results seem incorrect">

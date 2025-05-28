@@ -163,7 +163,7 @@
       "anchors": [
         {
           "anchor": "App",
-          "href": "https://pixelpatrol.app",
+          "href": "https://app.pixelpatrol.net",
           "icon": "browser"
         },
         {
@@ -173,7 +173,7 @@
         },
         {
           "anchor": "Support",
-          "href": "mailto:support@pixelpatrol.app",
+          "href": "mailto:support@pixelpatrol.net",
           "icon": "envelope"
         }
       ]
@@ -187,13 +187,13 @@
     "links": [
       {
         "label": "Dashboard",
-        "href": "https://pixelpatrol.app/protected"
+        "href": "https://app.pixelpatrol.net/protected"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://pixelpatrol.app/auth"
+      "href": "https://app.pixelpatrol.net/auth"
     }
   },
   "footer": {

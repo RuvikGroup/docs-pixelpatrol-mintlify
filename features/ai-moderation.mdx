@@ -150,11 +150,35 @@ Beyond simple label detection:
 Process multiple items efficiently:
 
 ```typescript
-const results = await moderateBatch([
-  { url: 'image1.jpg', type: 'image' },
-  { url: 'video1.mp4', type: 'video' },
-  { content: 'Text to analyze', type: 'text' }
-]);
+// Submit multiple items for batch processing
+const items = [
+  {
+    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
+    content_url: 'https://example.com/image1.jpg',
+    app_media_id: 'batch-1'
+  },
+  {
+    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
+    content_url: 'https://example.com/video1.mp4',
+    app_media_id: 'batch-2'
+  },
+  {
+    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
+    body: 'Text to analyze',
+    app_media_id: 'batch-3'
+  }
+];
+
+// Submit each item
+const results = await Promise.all(
+  items.map(item => 
+    fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item)
+    }).then(r => r.json())
+  )
+);
 ```
 
 ## Integration
@@ -163,18 +187,20 @@ const results = await moderateBatch([
 
 ```typescript
 // Submit for AI moderation
-const response = await fetch('/api/moderate', {
+const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${API_KEY}`,
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    url: 'https://example.com/image.jpg',
-    type: 'image',
-    ai_options: {
-      models: ['violence', 'adult'],
-      include_ocr: true
+    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
+    content_url: 'https://example.com/image.jpg',
+    app_media_id: 'media-123',
+    metadata: {
+      ai_options: {
+        models: ['violence', 'adult'],
+        include_ocr: true
+      }
     }
   })
 });

@@ -16,7 +16,7 @@ Every site includes:
 - **Name**: Display name for the site
 - **URL**: Primary website URL
 - **Description**: AI-generated or custom description
-- **API Key**: Unique key for authentication
+- **Site Key**: Unique key for authentication
 
 ### Webhook Configuration
 
@@ -39,15 +39,15 @@ graph TD
 
 ## API Integration
 
-Sites submit media for moderation using their API key:
+Sites submit media for moderation using their site key:
 
 ```bash
-curl -X POST https://your-supabase-url/functions/v1/submit-media \
-  -H "Authorization: Bearer YOUR_SITE_API_KEY" \
+curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
-    "url": "https://example.com/image.jpg",
-    "type": "image",
+    "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+    "content_url": "https://example.com/image.jpg",
+    "app_media_id": "unique-media-123",
     "metadata": {}
   }'
 ```
@@ -78,9 +78,9 @@ Sites can have multiple rule groups:
 
 ## Security
 
-### API Key Security
+### Site Key Security
 
-- Store API keys securely
+- Store site keys securely
 - Rotate keys periodically
 - Never expose keys in client-side code
 - Use environment variables
