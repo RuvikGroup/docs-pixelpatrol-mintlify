@@ -1,6 +1,6 @@
 ---
-title: 'Quickstart'
-description: 'Get your first moderation workflow running in 5 minutes'
+title: "Quickstart"
+description: "Get your first moderation workflow running in 5 minutes"
 ---
 
 ## Overview
@@ -21,16 +21,16 @@ Sites represent your applications or projects that need moderation.
 
 <Steps>
   <Step title="Navigate to Sites">
-    Go to the [Sites page](https://app.pixelpatrol.net/protected/sites) in your dashboard
+    Go to the [Sites page](https://app.pixelpatrol.net/protected/sites) in your
+    dashboard
   </Step>
-  
+
   <Step title="Create a New Site">
-    Click "Create Site" and fill in:
-    - **Name**: Your application name
-    - **URL**: Your application URL
-    - **Description**: Brief description of your site
+    Click "Create Site" and fill in: - **Name**: Your application name -
+    **URL**: Your application URL - **Description**: Brief description of your
+    site
   </Step>
-  
+
   <Step title="Save Your Site ID">
     After creation, copy your Site ID - you'll need this for API calls
   </Step>
@@ -75,7 +75,7 @@ Now let's submit content for moderation using the API.
 <CodeGroup>
 
 ```bash cURL
-curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
     "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
@@ -89,32 +89,35 @@ curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
-    content_url: 'https://example.com/image.jpg',
-    app_media_id: 'user-upload-123',
-    metadata: {
-      user_id: 'user123',
-      context: 'profile_photo'
-    }
-  })
-});
+const response = await fetch(
+  "https://api.pixelpatrol.net/functions/v1/submit-media",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      api_key: "site_xxxxxxxxxxxxxxxxxxxx",
+      content_url: "https://example.com/image.jpg",
+      app_media_id: "user-upload-123",
+      metadata: {
+        user_id: "user123",
+        context: "profile_photo",
+      },
+    }),
+  }
+);
 
 const result = await response.json();
-console.log('Media ID:', result.id);
-console.log('Status:', result.status);
+console.log("Media ID:", result.id);
+console.log("Status:", result.status);
 ```
 
 ```python Python
 import requests
 
 response = requests.post(
-    'https://your-supabase-url.supabase.co/functions/v1/submit-media',
+    'https://api.pixelpatrol.net/functions/v1/submit-media',
     headers={
         'Content-Type': 'application/json'
     },
@@ -146,22 +149,25 @@ Check the status of your submitted media:
 
 ```javascript
 const checkStatus = async (mediaId) => {
-  const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/get-media-status', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
-      media_id: mediaId
-    })
-  });
-  
+  const response = await fetch(
+    "https://api.pixelpatrol.net/functions/v1/get-media-status",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_key: "site_xxxxxxxxxxxxxxxxxxxx",
+        media_id: mediaId,
+      }),
+    }
+  );
+
   const result = await response.json();
-  
-  if (result.status === 'completed') {
-    console.log('Moderation result:', result.moderationResult);
-    console.log('Action:', result.action); // 'approve', 'block', or 'review'
+
+  if (result.status === "completed") {
+    console.log("Moderation result:", result.moderationResult);
+    console.log("Action:", result.action); // 'approve', 'block', or 'review'
   }
 };
 ```
@@ -176,25 +182,25 @@ Set up a webhook endpoint to receive real-time notifications:
 
 ```javascript
 // Example webhook handler
-app.post('/webhook/moderation', (req, res) => {
+app.post("/webhook/moderation", (req, res) => {
   // Verify webhook signature
-  const signature = req.headers['x-pixelpatrol-signature'];
+  const signature = req.headers["x-pixelpatrol-signature"];
   if (!verifyWebhookSignature(req.body, signature, WEBHOOK_SECRET)) {
-    return res.status(401).send('Invalid signature');
+    return res.status(401).send("Invalid signature");
   }
-  
+
   const { mediaId, status, moderationResult, action } = req.body;
-  
+
   // Handle the moderation result
-  if (action === 'block') {
+  if (action === "block") {
     // Remove or hide the content
     blockContent(mediaId);
-  } else if (action === 'review') {
+  } else if (action === "review") {
     // Flag for manual review
     flagForReview(mediaId);
   }
-  
-  res.status(200).send('OK');
+
+  res.status(200).send("OK");
 });
 ```
 
@@ -203,19 +209,35 @@ app.post('/webhook/moderation', (req, res) => {
 Monitor your moderation activity in the dashboard:
 
 <CardGroup cols={2}>
-  <Card title="Queue Page" icon="list" href="https://app.pixelpatrol.net/protected/queue">
+  <Card
+    title="Queue Page"
+    icon="list"
+    href="https://app.pixelpatrol.net/protected/queue"
+  >
     View all submitted media and their moderation status
   </Card>
-  
-  <Card title="Media Details" icon="magnifying-glass" href="https://app.pixelpatrol.net/protected/media-detail">
+
+  <Card
+    title="Media Details"
+    icon="magnifying-glass"
+    href="https://app.pixelpatrol.net/protected/media-detail"
+  >
     Detailed view of individual media items with AI analysis
   </Card>
-  
-  <Card title="Site Analytics" icon="chart-line" href="https://app.pixelpatrol.net/protected/sites">
+
+  <Card
+    title="Site Analytics"
+    icon="chart-line"
+    href="https://app.pixelpatrol.net/protected/sites"
+  >
     Track moderation statistics and webhook performance
   </Card>
-  
-  <Card title="Usage Tracking" icon="gauge" href="https://app.pixelpatrol.net/protected/subscription">
+
+  <Card
+    title="Usage Tracking"
+    icon="gauge"
+    href="https://app.pixelpatrol.net/protected/subscription"
+  >
     Monitor your API usage and limits
   </Card>
 </CardGroup>
@@ -226,7 +248,11 @@ Monitor your moderation activity in the dashboard:
   Explore the complete API documentation
 </Card>
 
-<Card title="Integration Guides" icon="puzzle" href="/guides/nextjs-integration">
+<Card
+  title="Integration Guides"
+  icon="puzzle"
+  href="/guides/nextjs-integration"
+>
   Framework-specific integration tutorials
 </Card>
 
@@ -234,7 +260,11 @@ Monitor your moderation activity in the dashboard:
   Learn about AI providers, batch processing, and more
 </Card>
 
-<Card title="Best Practices" icon="lightbulb" href="/guides/moderation-strategies">
+<Card
+  title="Best Practices"
+  icon="lightbulb"
+  href="/guides/moderation-strategies"
+>
   Optimize your moderation workflow
 </Card>
 

@@ -13,6 +13,7 @@ Sites represent the websites or applications that submit media for moderation. E
 ### Basic Settings
 
 Every site includes:
+
 - **Name**: Display name for the site
 - **URL**: Primary website URL
 - **Description**: AI-generated or custom description
@@ -21,6 +22,7 @@ Every site includes:
 ### Webhook Configuration
 
 Sites can receive moderation results via webhooks:
+
 - **Webhook URL**: Endpoint to receive notifications
 - **Webhook Secret**: Shared secret for request verification
 - **Retry Logic**: Automatic retry on failure
@@ -42,7 +44,7 @@ graph TD
 Sites submit media for moderation using their site key:
 
 ```bash
-curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
     "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
@@ -55,6 +57,7 @@ curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
 ## Rule Assignment
 
 Sites can have multiple rule groups:
+
 - Rule groups contain individual moderation rules
 - Rules are evaluated in priority order
 - First matching rule determines the action

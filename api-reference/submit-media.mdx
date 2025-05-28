@@ -1,60 +1,20 @@
 ---
 title: 'Submit Media'
-description: 'Submit content for moderation'
-api: 'POST https://your-supabase-url.supabase.co/functions/v1/submit-media'
+openapi: 'POST /submit-media'
 ---
 
-## Overview
-
-The submit-media endpoint accepts content for moderation. You can submit images via URL, text content, or both.
+Submit content for AI and rule-based moderation. Accepts text content, image URLs, or both.
 
 ## Authentication
 
-Include your site API key in the request body.
+Include your site key in the request body. No authorization headers required.
 
-## Request Body
+## Best Practices
 
-<ParamField body="api_key" type="string" required>
-  Your site API key (format: `site_xxxxxxxxxxxxxxxxxxxx`)
-</ParamField>
-
-<ParamField body="content_url" type="string">
-  URL of the image or media to moderate. Takes priority over text content.
-</ParamField>
-
-<ParamField body="body" type="string">
-  Text content to moderate. Used when `content_url` is not provided.
-</ParamField>
-
-<ParamField body="app_media_id" type="string">
-  Your application's unique identifier for this media item
-</ParamField>
-
-<ParamField body="submitted_by" type="string">
-  Identifier for the user who submitted the content
-</ParamField>
-
-<ParamField body="rule_group_id" type="string">
-  Specific rule group ID to use for moderation (UUID format)
-</ParamField>
-
-<ParamField body="metadata" type="object">
-  Additional metadata as key-value pairs
-</ParamField>
-
-## Response
-
-<ResponseField name="id" type="string">
-  Unique identifier for the submitted media
-</ResponseField>
-
-<ResponseField name="status" type="string">
-  Current status of the media (typically "pending")
-</ResponseField>
-
-<ResponseField name="message" type="string">
-  Success message
-</ResponseField>
+1. **Use unique app_media_id**: This helps track content across your system
+2. **Include metadata**: Add context to improve moderation accuracy  
+3. **Handle errors gracefully**: Implement retry logic for transient failures
+4. **Monitor usage**: Track your API usage against your plan limits
 
 ## Examples
 
@@ -63,7 +23,7 @@ Include your site API key in the request body.
 <CodeGroup>
 
 ```bash cURL
-curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
     "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
@@ -77,7 +37,7 @@ curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
+const response = await fetch('https://api.pixelpatrol.net/functions/v1/submit-media', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -100,7 +60,7 @@ const result = await response.json();
 import requests
 
 response = requests.post(
-    'https://your-supabase-url.supabase.co/functions/v1/submit-media',
+    'https://api.pixelpatrol.net/functions/v1/submit-media',
     json={
         'api_key': 'site_xxxxxxxxxxxxxxxxxxxx',
         'content_url': 'https://example.com/image.jpg',
@@ -122,18 +82,17 @@ result = response.json()
 <CodeGroup>
 
 ```bash cURL
-curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
     "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
     "body": "This is the text content to moderate",
-    "app_media_id": "text-789",
-    "submitted_by": "user-456"
+    "app_media_id": "text-789"
   }'
 ```
 
 ```javascript JavaScript
-const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
+const response = await fetch('https://api.pixelpatrol.net/functions/v1/submit-media', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -141,20 +100,18 @@ const response = await fetch('https://your-supabase-url.supabase.co/functions/v1
   body: JSON.stringify({
     api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
     body: 'This is the text content to moderate',
-    app_media_id: 'text-789',
-    submitted_by: 'user-456'
+    app_media_id: 'text-789'
   })
 });
 ```
 
 ```python Python
 response = requests.post(
-    'https://your-supabase-url.supabase.co/functions/v1/submit-media',
+    'https://api.pixelpatrol.net/functions/v1/submit-media',
     json={
         'api_key': 'site_xxxxxxxxxxxxxxxxxxxx',
         'body': 'This is the text content to moderate',
-        'app_media_id': 'text-789',
-        'submitted_by': 'user-456'
+        'app_media_id': 'text-789'
     }
 )
 ```
@@ -164,7 +121,7 @@ response = requests.post(
 ### Submit with Custom Rule Group
 
 ```javascript
-const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
+const response = await fetch('https://api.pixelpatrol.net/functions/v1/submit-media', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -181,62 +138,11 @@ const response = await fetch('https://your-supabase-url.supabase.co/functions/v1
 });
 ```
 
-## Error Responses
-
-### Invalid API Key
-
-```json
-{
-  "error": "Invalid API Key"
-}
-```
-Status: `401 Unauthorized`
-
-### Missing Required Fields
-
-```json
-{
-  "error": "Invalid request data",
-  "details": {
-    "body": {
-      "_errors": ["At least one of content, content_url must be provided"]
-    }
-  }
-}
-```
-Status: `400 Bad Request`
-
-### Moderation Limit Exceeded
-
-```json
-{
-  "error": "Moderation limit exceeded",
-  "type": "moderation_limit"
-}
-```
-Status: `403 Forbidden`
-
-### No Active Subscription
-
-```json
-{
-  "error": "Team has no active subscription"
-}
-```
-Status: `403 Forbidden`
-
 ## Rate Limits
 
-- 1000 requests per minute per API key
+- 1000 requests per minute per site key
 - 10MB maximum file size for direct uploads
 - 100KB maximum text content size
-
-## Best Practices
-
-1. **Use unique app_media_id**: This helps track content across your system
-2. **Include metadata**: Add context to improve moderation accuracy
-3. **Handle errors gracefully**: Implement retry logic for transient failures
-4. **Monitor usage**: Track your API usage against your plan limits
 
 ## Related Endpoints
 

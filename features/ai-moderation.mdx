@@ -14,19 +14,13 @@ Pixel Patrol's AI moderation uses state-of-the-art machine learning models to an
 
 <CardGroup cols={2}>
   <Card title="Visual Analysis" icon="eye">
-    - Object detection
-    - Scene understanding
-    - Text extraction (OCR)
-    - Face detection
-    - Brand/logo recognition
+    - Object detection - Scene understanding - Text extraction (OCR) - Face
+    detection - Brand/logo recognition
   </Card>
-  
+
   <Card title="Context Understanding" icon="lightbulb">
-    - Semantic analysis
-    - Context awareness
-    - Cultural sensitivity
-    - Sarcasm detection
-    - Intent classification
+    - Semantic analysis - Context awareness - Cultural sensitivity - Sarcasm
+    detection - Intent classification
   </Card>
 </CardGroup>
 
@@ -34,16 +28,16 @@ Pixel Patrol's AI moderation uses state-of-the-art machine learning models to an
 
 Our AI models detect multiple content categories:
 
-| Category | Description | Confidence Range |
-|----------|-------------|------------------|
-| Violence | Graphic violence, weapons, gore | 0.0 - 1.0 |
-| Adult | Nudity, sexual content | 0.0 - 1.0 |
-| Hate | Discriminatory content, hate symbols | 0.0 - 1.0 |
-| Self-Harm | Content promoting self-injury | 0.0 - 1.0 |
-| Drugs | Drug use, paraphernalia | 0.0 - 1.0 |
-| Spam | Promotional, repetitive content | 0.0 - 1.0 |
-| Bullying | Harassment, cyberbullying | 0.0 - 1.0 |
-| Misinformation | False or misleading content | 0.0 - 1.0 |
+| Category       | Description                          | Confidence Range |
+| -------------- | ------------------------------------ | ---------------- |
+| Violence       | Graphic violence, weapons, gore      | 0.0 - 1.0        |
+| Adult          | Nudity, sexual content               | 0.0 - 1.0        |
+| Hate           | Discriminatory content, hate symbols | 0.0 - 1.0        |
+| Self-Harm      | Content promoting self-injury        | 0.0 - 1.0        |
+| Drugs          | Drug use, paraphernalia              | 0.0 - 1.0        |
+| Spam           | Promotional, repetitive content      | 0.0 - 1.0        |
+| Bullying       | Harassment, cyberbullying            | 0.0 - 1.0        |
+| Misinformation | False or misleading content          | 0.0 - 1.0        |
 
 ## How It Works
 
@@ -114,11 +108,11 @@ Pixel Patrol supports custom AI models for specific use cases:
 
 ### Speed Metrics
 
-| Content Type | Average Processing Time | Throughput |
-|--------------|------------------------|------------|
-| Image (< 5MB) | 200-500ms | 1000/min |
-| Video (< 50MB) | 2-5 seconds | 100/min |
-| Text (< 10KB) | 50-100ms | 5000/min |
+| Content Type   | Average Processing Time | Throughput |
+| -------------- | ----------------------- | ---------- |
+| Image (< 5MB)  | 200-500ms               | 1000/min   |
+| Video (< 50MB) | 2-5 seconds             | 100/min    |
+| Text (< 10KB)  | 50-100ms                | 5000/min   |
 
 ### Accuracy Metrics
 
@@ -132,6 +126,7 @@ Pixel Patrol supports custom AI models for specific use cases:
 ### Multi-Language Support
 
 AI moderation supports 50+ languages:
+
 - Automatic language detection
 - Language-specific models
 - Cross-language hate speech detection
@@ -140,6 +135,7 @@ AI moderation supports 50+ languages:
 ### Contextual Analysis
 
 Beyond simple label detection:
+
 - **Artistic Context**: Distinguishes art from explicit content
 - **Medical Context**: Recognizes educational content
 - **News Context**: Understands journalistic content
@@ -153,30 +149,30 @@ Process multiple items efficiently:
 // Submit multiple items for batch processing
 const items = [
   {
-    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
-    content_url: 'https://example.com/image1.jpg',
-    app_media_id: 'batch-1'
+    api_key: "site_xxxxxxxxxxxxxxxxxxxx",
+    content_url: "https://example.com/image1.jpg",
+    app_media_id: "batch-1",
   },
   {
-    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
-    content_url: 'https://example.com/video1.mp4',
-    app_media_id: 'batch-2'
+    api_key: "site_xxxxxxxxxxxxxxxxxxxx",
+    content_url: "https://example.com/video1.mp4",
+    app_media_id: "batch-2",
   },
   {
-    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
-    body: 'Text to analyze',
-    app_media_id: 'batch-3'
-  }
+    api_key: "site_xxxxxxxxxxxxxxxxxxxx",
+    body: "Text to analyze",
+    app_media_id: "batch-3",
+  },
 ];
 
 // Submit each item
 const results = await Promise.all(
-  items.map(item => 
-    fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item)
-    }).then(r => r.json())
+  items.map((item) =>
+    fetch("https://api.pixelpatrol.net/functions/v1/submit-media", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item),
+    }).then((r) => r.json())
   )
 );
 ```
@@ -187,28 +183,32 @@ const results = await Promise.all(
 
 ```typescript
 // Submit for AI moderation
-const response = await fetch('https://your-supabase-url.supabase.co/functions/v1/submit-media', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    api_key: 'site_xxxxxxxxxxxxxxxxxxxx',
-    content_url: 'https://example.com/image.jpg',
-    app_media_id: 'media-123',
-    metadata: {
-      ai_options: {
-        models: ['violence', 'adult'],
-        include_ocr: true
-      }
-    }
-  })
-});
+const response = await fetch(
+  "https://api.pixelpatrol.net/functions/v1/submit-media",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      api_key: "site_xxxxxxxxxxxxxxxxxxxx",
+      content_url: "https://example.com/image.jpg",
+      app_media_id: "media-123",
+      metadata: {
+        ai_options: {
+          models: ["violence", "adult"],
+          include_ocr: true,
+        },
+      },
+    }),
+  }
+);
 ```
 
 ### Real-time Moderation
 
 For live content streams:
+
 - WebSocket connections
 - Frame sampling for videos
 - Incremental text analysis

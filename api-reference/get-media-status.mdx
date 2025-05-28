@@ -1,0 +1,57 @@
+---
+title: 'Get Media Status'
+openapi: 'GET /get-media-status'
+---
+
+Get the moderation status of previously submitted media content.
+
+## Authentication
+
+Include your site key as a query parameter.
+
+## Query Parameters
+
+<ParamField query="api_key" type="string" required>
+  Your site key (format: `site_xxxxxxxxxxxxxxxxxxxx`)
+</ParamField>
+
+<ParamField query="media_id" type="string">
+  The Pixel Patrol media ID returned from submit-media
+</ParamField>
+
+<ParamField query="app_media_id" type="string">
+  Your application's media ID provided during submission
+</ParamField>
+
+<Note>
+  You must provide either `media_id` or `app_media_id` to identify the media item.
+</Note>
+
+## Response
+
+The API returns the current moderation status along with metadata about the media item.
+
+### Status Values
+
+- `pending` - Media is queued for moderation
+- `approved` - Media passed moderation checks
+- `rejected` - Media failed moderation checks
+- `pending_review` - Media requires manual review
+
+## Example
+
+```bash
+curl -G "https://api.pixelpatrol.net/functions/v1/get-media-status" \
+  -d "api_key=site_xxxxxxxxxxxxxxxxxxxx" \
+  -d "media_id=550e8400-e29b-41d4-a716-446655440000"
+```
+
+Response:
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "approved",
+  "app_media_id": "user-upload-123",
+  "moderated_at": "2023-12-01T10:30:00Z"
+}
+```

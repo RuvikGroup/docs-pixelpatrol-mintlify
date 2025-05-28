@@ -1,7 +1,7 @@
 ---
-title: 'Create Your Site'
-description: 'Step-by-step guide to adding your first website or application'
-icon: 'globe'
+title: "Create Your Site"
+description: "Step-by-step guide to adding your first website or application"
+icon: "globe"
 ---
 
 # Creating Your First Site
@@ -53,7 +53,8 @@ Fill in the basic details for your site:
 ```
 
 <Note>
-The URL is used for webhook callbacks and site identification. Make sure it's accessible from the internet if you plan to use webhooks.
+  The URL is used for webhook callbacks and site identification. Make sure it's
+  accessible from the internet if you plan to use webhooks.
 </Note>
 
 ## Step 3: Configure Moderation Settings
@@ -64,39 +65,25 @@ Choose how content will be moderated for this site:
 
 <Tabs>
   <Tab title="AI Moderation">
-    **Automated AI-Powered Moderation**
-    
-    Best for: High-volume content, real-time moderation needs
-    
-    - Content is automatically analyzed by AI
-    - Instant moderation decisions
-    - Configurable confidence thresholds
-    
+    **Automated AI-Powered Moderation** Best for: High-volume content, real-time
+    moderation needs - Content is automatically analyzed by AI - Instant
+    moderation decisions - Configurable confidence thresholds
     <Info>
-    AI moderation uses advanced models to detect inappropriate content, spam, and policy violations.
+      AI moderation uses advanced models to detect inappropriate content, spam,
+      and policy violations.
     </Info>
   </Tab>
-  
+
   <Tab title="Rule-Based">
-    **Custom Rule-Based Moderation**
-    
-    Best for: Specific policy requirements, keyword filtering
-    
-    - Define custom rules and patterns
-    - Regex support for complex matching
-    - Combine multiple conditions
-    
-    [Learn more about rules →](/features/rules)
+    **Custom Rule-Based Moderation** Best for: Specific policy requirements,
+    keyword filtering - Define custom rules and patterns - Regex support for
+    complex matching - Combine multiple conditions [Learn more about rules
+    →](/features/rules)
   </Tab>
-  
+
   <Tab title="Hybrid">
-    **Combined AI + Rules**
-    
-    Best for: Maximum accuracy and control
-    
-    - AI provides baseline moderation
-    - Rules handle specific cases
-    - Best of both approaches
+    **Combined AI + Rules** Best for: Maximum accuracy and control - AI provides
+    baseline moderation - Rules handle specific cases - Best of both approaches
   </Tab>
 </Tabs>
 
@@ -116,7 +103,8 @@ If using AI moderation, configure the confidence threshold:
 - **High (85-95%)**: Only very confident violations flagged
 
 <Tip>
-Start with a medium threshold (75%) and adjust based on your moderation results.
+  Start with a medium threshold (75%) and adjust based on your moderation
+  results.
 </Tip>
 
 ## Step 4: Webhook Configuration (Optional)
@@ -129,21 +117,15 @@ Webhooks allow PixelPatrol to notify your application when moderation decisions 
   <Step title="Toggle Webhooks On">
     Click the webhook toggle to enable webhook notifications
   </Step>
-  
+
   <Step title="Enter Webhook URL">
-    Provide your endpoint URL that will receive moderation results
-    
-    ```
-    https://api.example.com/webhooks/moderation
-    ```
+    Provide your endpoint URL that will receive moderation results ```
+    https://api.example.com/webhooks/moderation ```
   </Step>
-  
+
   <Step title="Generate Webhook Secret">
     Click "Generate Secret" to create a secure webhook signing key
-    
-    <Warning>
-    Save this secret immediately - it won't be shown again!
-    </Warning>
+    <Warning>Save this secret immediately - it won't be shown again!</Warning>
   </Step>
 </Steps>
 
@@ -181,7 +163,8 @@ If you have existing rule groups, you can assign them to your site:
 ![Rule Group Assignment](screenshots/rule-group-assignment.png)
 
 <Info>
-Rule groups allow you to reuse moderation rules across multiple sites. You can create rule groups later if you don't have any yet.
+  Rule groups allow you to reuse moderation rules across multiple sites. You can
+  create rule groups later if you don't have any yet.
 </Info>
 
 ## Step 6: Review and Create
@@ -189,12 +172,10 @@ Rule groups allow you to reuse moderation rules across multiple sites. You can c
 Before creating your site, review your configuration:
 
 <Checklist>
-  - [ ] Site name and URL are correct
-  - [ ] Moderation type is appropriate for your content
-  - [ ] Confidence threshold is set (if using AI)
-  - [ ] Webhook URL is accessible (if enabled)
-  - [ ] Webhook secret is saved securely
-  - [ ] Rule groups are assigned (if applicable)
+  - [ ] Site name and URL are correct - [ ] Moderation type is appropriate for
+  your content - [ ] Confidence threshold is set (if using AI) - [ ] Webhook URL
+  is accessible (if enabled) - [ ] Webhook secret is saved securely - [ ] Rule
+  groups are assigned (if applicable)
 </Checklist>
 
 Click **"Create Site"** to save your configuration.
@@ -228,7 +209,7 @@ Now that your site is created, let's test the integration:
 Test your integration with a simple API call:
 
 ```bash
-curl -X POST https://your-supabase-url.supabase.co/functions/v1/submit-media \
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
   -H "Content-Type: application/json" \
   -d '{
     "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
@@ -248,15 +229,15 @@ After creation, you can:
   <Card title="View Analytics" icon="chart-line">
     Monitor moderation statistics and trends
   </Card>
-  
+
   <Card title="Edit Settings" icon="gear">
     Update configuration, thresholds, and webhooks
   </Card>
-  
+
   <Card title="View Logs" icon="scroll">
     Review webhook delivery logs and errors
   </Card>
-  
+
   <Card title="Manage Rules" icon="scale-balanced">
     Add or modify rule groups for this site
   </Card>
@@ -270,7 +251,7 @@ After creation, you can:
 {
   "name": "Product Reviews",
   "moderation_type": "hybrid",
-  "confidence_threshold": 0.80,
+  "confidence_threshold": 0.8,
   "rule_groups": ["spam_detection", "competitor_mentions"]
 }
 ```
@@ -301,24 +282,21 @@ After creation, you can:
 
 <AccordionGroup>
   <Accordion title="Webhook not receiving events">
-    - Verify your webhook URL is publicly accessible
-    - Check that SSL certificate is valid (HTTPS required)
-    - Review webhook logs in the site detail page
-    - Ensure your endpoint returns 200 OK status
+    - Verify your webhook URL is publicly accessible - Check that SSL
+    certificate is valid (HTTPS required) - Review webhook logs in the site
+    detail page - Ensure your endpoint returns 200 OK status
   </Accordion>
-  
+
   <Accordion title="Site key not working">
-    - Confirm you're using the correct site key
-    - Check that the site is active
-    - Verify your subscription has available moderations
-    - Try regenerating the site key in settings
+    - Confirm you're using the correct site key - Check that the site is active
+    - Verify your subscription has available moderations - Try regenerating the
+    site key in settings
   </Accordion>
-  
+
   <Accordion title="Moderation results seem incorrect">
-    - Adjust the confidence threshold
-    - Review and update your rule groups
-    - Check if content type matches configuration
-    - Contact support with example content
+    - Adjust the confidence threshold - Review and update your rule groups -
+    Check if content type matches configuration - Contact support with example
+    content
   </Accordion>
 </AccordionGroup>
 
@@ -332,26 +310,38 @@ After creation, you can:
 3. **Document webhook endpoints**: Keep track of which endpoints handle which sites
 4. **Test thoroughly**: Always test moderation settings with real content samples
 5. **Monitor regularly**: Check analytics to fine-tune your configuration
-</Tip>
+   </Tip>
 
 ## Next Steps
 
 Great job! Your site is now ready to moderate content. Here's what to do next:
 
 <CardGroup>
-  <Card title="Set Up Your Team" icon="users" href="/getting-started/team-setup">
+  <Card
+    title="Set Up Your Team"
+    icon="users"
+    href="/getting-started/team-setup"
+  >
     Invite team members to help manage moderation
   </Card>
-  
-  <Card title="Create Custom Rules" icon="scale-balanced" href="/features/rules">
+
+  <Card
+    title="Create Custom Rules"
+    icon="scale-balanced"
+    href="/features/rules"
+  >
     Define specific moderation rules for your content
   </Card>
-  
+
   <Card title="Integrate the API" icon="code" href="/api-reference">
     Start sending content for moderation
   </Card>
-  
-  <Card title="Choose a Plan" icon="credit-card" href="/getting-started/choose-a-plan">
+
+  <Card
+    title="Choose a Plan"
+    icon="credit-card"
+    href="/getting-started/choose-a-plan"
+  >
     Select the right subscription for your volume
   </Card>
 </CardGroup>
