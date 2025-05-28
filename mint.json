@@ -63,7 +63,7 @@
               {
                 "group": "Endpoints",
                 "openapi": {
-                  "source": "/api-reference/openapi.json",
+                  "source": "https://raw.githubusercontent.com/RuvikGroup/docs-pixelpatrol-mintlify/refs/heads/master/openapi.json",
                   "directory": "api-reference"
                 }
               }
