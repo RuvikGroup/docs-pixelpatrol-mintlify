@@ -1,0 +1,67 @@
+---
+title: 'Authentication'
+description: 'How to authenticate with the Pixel Patrol API'
+---
+
+## Site Keys
+
+Pixel Patrol uses site keys for API authentication. Each site you create has a unique site key that identifies your application and provides access to the API.
+
+### Getting Your Site Key
+
+1. Log in to your [Pixel Patrol dashboard](https://app.pixelpatrol.net)
+2. Navigate to your team and select a site
+3. Your site key will be displayed in the format: `site_xxxxxxxxxxxxxxxxxxxx`
+
+### Using Site Keys
+
+Include your site key in the request body for all API calls:
+
+```json
+{
+  "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+  "content_url": "https://example.com/image.jpg",
+  "app_media_id": "unique-123"
+}
+```
+
+<Warning>
+**Keep your site keys secure!** Never expose them in client-side code or public repositories. Always use them from your backend services.
+</Warning>
+
+## No Bearer Tokens Required
+
+Unlike many APIs, Pixel Patrol doesn't use Authorization headers or Bearer tokens. Simply include your site key in the request body.
+
+```bash
+# ✅ Correct - site key in request body
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
+  -H "Content-Type: application/json" \
+  -d '{
+    "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+    "body": "Text to moderate"
+  }'
+
+# ❌ Incorrect - don't use Authorization headers
+curl -X POST https://api.pixelpatrol.net/functions/v1/submit-media \
+  -H "Authorization: Bearer site_xxxxxxxxxxxxxxxxxxxx" \
+  -d '{"body": "Text to moderate"}'
+```
+
+## Team-Based Access
+
+Each site key is tied to a specific team and site. The API automatically:
+
+- Associates submitted media with the correct team
+- Applies the site's configured rule groups
+- Enforces the team's subscription limits
+- Routes webhooks to the site's configured endpoints
+
+## Key Rotation
+
+If you suspect your site key has been compromised:
+
+1. Contact [support@pixelpatrol.net](mailto:support@pixelpatrol.net) 
+2. We'll generate a new site key for you
+3. Update your applications with the new key
+4. The old key will be immediately disabled

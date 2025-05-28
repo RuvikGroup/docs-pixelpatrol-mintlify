@@ -58,14 +58,14 @@
             ]
           },
           {
-            "group": "Media API",
+            "group": "API Reference",
             "pages": [
               {
                 "group": "Endpoints",
-                "pages": [
-                  "api-reference/submit-media",
-                  "api-reference/get-media-status"
-                ]
+                "openapi": {
+                  "source": "/api-reference/openapi.json",
+                  "directory": "api-reference"
+                }
               }
             ]
           },

@@ -1,0 +1,284 @@
+---
+title: 'Error Handling'
+description: 'Common API errors and how to handle them'
+---
+
+## HTTP Status Codes
+
+Pixel Patrol uses standard HTTP status codes to indicate success or failure:
+
+| Status Code | Meaning |
+|-------------|---------|
+| `200` | Success - Request completed successfully |
+| `400` | Bad Request - Invalid request data |
+| `401` | Unauthorized - Invalid or missing site key |
+| `403` | Forbidden - Access denied (limits exceeded, no subscription) |
+| `404` | Not Found - Resource doesn't exist |
+| `429` | Too Many Requests - Rate limit exceeded |
+| `500` | Internal Server Error - Something went wrong on our end |
+
+## Error Response Format
+
+All error responses follow a consistent JSON format:
+
+```json
+{
+  "error": "Error type or message",
+  "message": "Detailed description of the error",
+  "type": "error_category",
+  "details": {
+    "field": "Additional context"
+  }
+}
+```
+
+## Common Errors
+
+### Invalid Site Key
+
+```json
+{
+  "error": "Invalid API Key",
+  "message": "The provided site key is not valid or has been disabled"
+}
+```
+
+**Status:** `401 Unauthorized`
+
+**Solutions:**
+- Verify your site key format: `site_xxxxxxxxxxxxxxxxxxxx`
+- Check that the site key exists in your dashboard
+- Ensure the site key hasn't been rotated or disabled
+
+### Missing Required Fields
+
+```json
+{
+  "error": "Invalid request data",
+  "message": "Request validation failed",
+  "details": {
+    "api_key": ["This field is required"],
+    "content": ["At least one of body or content_url must be provided"]
+  }
+}
+```
+
+**Status:** `400 Bad Request`
+
+**Solutions:**
+- Include the `api_key` field in your request body
+- Provide either `body` (text) or `content_url` (image URL)
+- Check field names match the API specification exactly
+
+### Moderation Limit Exceeded
+
+```json
+{
+  "error": "Moderation limit exceeded",
+  "type": "moderation_limit",
+  "message": "Your team has reached the monthly moderation limit"
+}
+```
+
+**Status:** `403 Forbidden`
+
+**Solutions:**
+- Upgrade your subscription plan
+- Wait for your monthly limit to reset
+- Contact support for temporary limit increases
+
+### No Active Subscription
+
+```json
+{
+  "error": "Team has no active subscription",
+  "message": "A valid subscription is required to use the API"
+}
+```
+
+**Status:** `403 Forbidden`
+
+**Solutions:**
+- Subscribe to a paid plan in your dashboard
+- Ensure your payment method is valid and current
+- Contact billing support if you believe this is an error
+
+### Rate Limit Exceeded
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "Too many requests. Please try again in 60 seconds.",
+  "retry_after": 60
+}
+```
+
+**Status:** `429 Too Many Requests`
+
+**Solutions:**
+- Implement exponential backoff retry logic
+- Reduce request frequency
+- Use the `Retry-After` header value for timing
+
+### Media Not Found
+
+```json
+{
+  "error": "Media not found",
+  "message": "No media found with the provided ID"
+}
+```
+
+**Status:** `404 Not Found`
+
+**Solutions:**
+- Verify the `media_id` or `app_media_id` is correct
+- Ensure the media belongs to your site
+- Check that the media wasn't deleted
+
+### Content Too Large
+
+```json
+{
+  "error": "Content too large",
+  "message": "Text content exceeds maximum size of 100KB"
+}
+```
+
+**Status:** `400 Bad Request`
+
+**Solutions:**
+- Reduce text content size to under 100KB
+- For images, ensure files are under 10MB
+- Consider splitting large content into smaller chunks
+
+### Invalid URL
+
+```json
+{
+  "error": "Invalid content URL",
+  "message": "The provided URL is not accessible or not a valid image"
+}
+```
+
+**Status:** `400 Bad Request`
+
+**Solutions:**
+- Ensure the URL is publicly accessible
+- Verify the URL points to a supported image format (JPEG, PNG, GIF, WebP)
+- Check that the image server allows external access
+
+## Error Handling Best Practices
+
+### 1. Implement Retry Logic
+
+```javascript
+async function submitMediaWithRetry(data, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch('/api/submit-media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      }
+      
+      const error = await response.json();
+      
+      // Don't retry client errors (4xx)
+      if (response.status >= 400 && response.status < 500) {
+        throw new Error(error.message);
+      }
+      
+      // Retry server errors (5xx) and rate limits
+      if (attempt === maxRetries) {
+        throw new Error(error.message);
+      }
+      
+      // Exponential backoff
+      const delay = Math.pow(2, attempt) * 1000;
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+    } catch (networkError) {
+      if (attempt === maxRetries) throw networkError;
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    }
+  }
+}
+```
+
+### 2. Validate Input Before Sending
+
+```javascript
+function validateSubmissionData(data) {
+  const errors = [];
+  
+  if (!data.api_key) {
+    errors.push('Site key is required');
+  }
+  
+  if (!data.body && !data.content_url) {
+    errors.push('Either text content or image URL must be provided');
+  }
+  
+  if (data.body && data.body.length > 100000) {
+    errors.push('Text content must be under 100KB');
+  }
+  
+  if (errors.length > 0) {
+    throw new Error('Validation failed: ' + errors.join(', '));
+  }
+}
+```
+
+### 3. Handle Specific Error Types
+
+```javascript
+async function handleApiResponse(response) {
+  if (response.ok) {
+    return await response.json();
+  }
+  
+  const error = await response.json();
+  
+  switch (response.status) {
+    case 401:
+      // Invalid site key - check configuration
+      throw new Error('Authentication failed: Please check your site key');
+      
+    case 403:
+      if (error.type === 'moderation_limit') {
+        // Show upgrade prompt
+        showUpgradeDialog();
+      } else {
+        // No subscription
+        showSubscriptionDialog();
+      }
+      break;
+      
+    case 429:
+      // Rate limited - implement backoff
+      const retryAfter = response.headers.get('Retry-After') || 60;
+      setTimeout(() => retryRequest(), retryAfter * 1000);
+      break;
+      
+    default:
+      throw new Error(error.message || 'Unknown error occurred');
+  }
+}
+```
+
+## Getting Help
+
+If you encounter errors not covered here:
+
+1. Check the [API status page](https://status.pixelpatrol.net) for known issues
+2. Review your request format against the OpenAPI specification
+3. Contact [support@pixelpatrol.net](mailto:support@pixelpatrol.net) with:
+   - Your site key (last 4 characters only)
+   - The exact request you're making
+   - The full error response
+   - Timestamp of when the error occurred

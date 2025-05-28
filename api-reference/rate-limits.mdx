@@ -1,0 +1,108 @@
+---
+title: 'Rate Limits'
+description: 'API rate limits and usage guidelines'
+---
+
+## Rate Limits
+
+Pixel Patrol enforces rate limits to ensure fair usage and system stability.
+
+### Per Site Key Limits
+
+| Endpoint | Rate Limit | Window |
+|----------|------------|---------|
+| `/submit-media` | 1,000 requests | Per minute |
+| `/get-media-status` | 2,000 requests | Per minute |
+
+### Content Size Limits
+
+| Content Type | Maximum Size |
+|--------------|--------------|
+| Text content (`body` field) | 100 KB |
+| Image files (via URL) | 10 MB |
+| Metadata object | 10 KB |
+
+## Rate Limit Headers
+
+API responses include rate limit information in headers:
+
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+- `X-RateLimit-Limit`: Maximum requests allowed per window
+- `X-RateLimit-Remaining`: Requests remaining in current window  
+- `X-RateLimit-Reset`: Unix timestamp when the window resets
+
+## Handling Rate Limits
+
+When you exceed rate limits, the API returns a `429 Too Many Requests` response:
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "Too many requests. Please try again in 60 seconds.",
+  "retry_after": 60
+}
+```
+
+### Best Practices
+
+1. **Implement exponential backoff** - Wait longer between retries after each failure
+2. **Monitor rate limit headers** - Track remaining requests to avoid hitting limits
+3. **Batch requests when possible** - Submit multiple items efficiently
+4. **Cache status checks** - Avoid repeatedly checking the same media status
+
+### Example Retry Logic
+
+```javascript
+async function submitWithRetry(data, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch('https://api.pixelpatrol.net/functions/v1/submit-media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      }
+      
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After') || Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        continue;
+      }
+      
+      throw new Error(`HTTP ${response.status}`);
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    }
+  }
+}
+```
+
+## Subscription Limits
+
+Rate limits are separate from your subscription's moderation limits:
+
+- **Rate limits** prevent API abuse (requests per minute)
+- **Moderation limits** control usage based on your plan (moderations per month)
+
+When you exceed your monthly moderation limit, you'll receive a `403 Forbidden` response:
+
+```json
+{
+  "error": "Moderation limit exceeded",
+  "type": "moderation_limit",
+  "message": "Your team has reached the monthly moderation limit. Please upgrade your plan."
+}
+```
+
+## Increasing Limits
+
+Contact [support@pixelpatrol.net](mailto:support@pixelpatrol.net) if you need higher rate limits for your use case. We can accommodate enterprise customers with custom limits.

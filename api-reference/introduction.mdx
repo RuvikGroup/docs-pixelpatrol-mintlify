@@ -1,33 +1,135 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'API Introduction'
+description: 'Welcome to the Pixel Patrol API'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Welcome to Pixel Patrol API
 
-## Welcome
+The Pixel Patrol API provides powerful, easy-to-use endpoints for submitting content for AI and rule-based moderation. Our API is designed to integrate seamlessly into your applications with minimal setup.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Base URL
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+All API endpoints are available at:
+
+```
+https://api.pixelpatrol.net/functions/v1
+```
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="AI-Powered Moderation" icon="brain">
+    Leverage OpenAI, Google Vision AI, and Amazon Rekognition for comprehensive content analysis
+  </Card>
+  <Card title="Rule-Based Filtering" icon="filter">
+    Create custom rules with regex patterns and confidence thresholds
+  </Card>
+  <Card title="Real-time Webhooks" icon="bolt">
+    Get instant notifications when moderation completes
+  </Card>
+  <Card title="Team Management" icon="users">
+    Multi-tenant architecture with team-based access control
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+Get started with the Pixel Patrol API in minutes:
+
+1. **[Create your account](https://app.pixelpatrol.net/auth)** and set up a team
+2. **[Create a site](https://app.pixelpatrol.net/protected/sites)** to get your site key
+3. **Submit your first content** for moderation
+4. **Set up webhooks** to receive real-time updates
+
+## API Overview
+
+The Pixel Patrol API consists of two main endpoints:
+
+### Submit Media
+Submit text content, image URLs, or both for moderation analysis.
+
+```bash
+POST /submit-media
+```
+
+### Get Media Status  
+Check the moderation status of previously submitted content.
+
+```bash
+GET /get-media-status
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+Pixel Patrol uses site keys for authentication. Include your site key in the request body:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+  "content_url": "https://example.com/image.jpg"
+}
 ```
+
+<Note>
+No authorization headers required! Simply include your site key in the request body.
+</Note>
+
+## OpenAPI Specification
+
+Our API is fully documented using OpenAPI 3.0. You can:
+
+- **Explore endpoints** using the interactive playground below
+- **Generate client libraries** for your preferred programming language  
+- **Import the spec** into tools like Postman or Insomnia
+
+<Card
+  title="OpenAPI Specification"
+  icon="code"
+  href="/openapi.json"
+>
+  View the complete OpenAPI specification file
+</Card>
+
+## SDKs and Libraries
+
+While we don't maintain official SDKs yet, our OpenAPI specification can generate client libraries for most programming languages:
+
+- **JavaScript/TypeScript** - Use with fetch, axios, or generated clients
+- **Python** - Compatible with requests library and OpenAPI generators
+- **PHP** - Works with Guzzle HTTP client
+- **Ruby** - Compatible with Net::HTTP and Faraday
+- **Go** - Use with native http package or generated clients
+
+## Rate Limits
+
+- **1,000 requests per minute** per site key for `/submit-media`
+- **2,000 requests per minute** per site key for `/get-media-status`
+- **100KB max** text content size
+- **10MB max** image file size
+
+## Support
+
+Need help getting started?
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/quickstart">
+    Comprehensive guides and tutorials
+  </Card>
+  <Card title="Email Support" icon="envelope" href="mailto:support@pixelpatrol.net">
+    Get help from our support team
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Authentication" icon="key" href="/api-reference/authentication">
+    Learn how to authenticate with site keys
+  </Card>
+  <Card title="Submit Media" icon="upload" href="/api-reference/submit-media">
+    Start submitting content for moderation
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/api-reference/webhooks/overview">
+    Set up real-time notifications
+  </Card>
+</CardGroup>
