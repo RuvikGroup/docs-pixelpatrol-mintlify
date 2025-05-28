@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "venus",
+  "theme": "mint",
   "name": "Pixel Patrol",
    "colors": {
     "primary": "#16A34A",
