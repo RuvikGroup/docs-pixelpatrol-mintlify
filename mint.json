@@ -1,8 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "venus",
   "name": "Pixel Patrol",
-  "openapi": "./openapi.json",
    "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -47,30 +46,7 @@
       },
       {
         "tab": "API Reference",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "api-reference/introduction",
-              "api-reference/authentication",
-              "api-reference/rate-limits",
-              "api-reference/errors"
-            ]
-          },
-          {
-            "group": "Endpoints",
-            "openapi": "./openapi.json"
-          },
-          {
-            "group": "Webhooks",
-            "pages": [
-              "api-reference/webhooks/overview",
-              "api-reference/webhooks/verification",
-              "api-reference/webhooks/events",
-              "api-reference/webhooks/retry-logic"
-            ]
-          }
-        ]
+        "openapi": "openapi.json"
       },
       {
         "tab": "Tutorials",
@@ -161,7 +137,7 @@
         },
         {
           "anchor": "Support",
-          "href": "mailto:support@pixelpatrol.net",
+          "href": "mailto:hello@pixelpatrol.net",
           "icon": "envelope"
         }
       ]

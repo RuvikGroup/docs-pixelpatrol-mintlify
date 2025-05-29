@@ -1,6 +1,6 @@
 ---
-title: 'API Introduction'
-description: 'Welcome to the Pixel Patrol API'
+title: "API Introduction"
+description: "Welcome to the Pixel Patrol API"
 ---
 
 ## Welcome to Pixel Patrol API
@@ -19,7 +19,8 @@ https://api.pixelpatrol.net/functions/v1
 
 <CardGroup cols={2}>
   <Card title="AI-Powered Moderation" icon="brain">
-    Leverage OpenAI, Google Vision AI, and Amazon Rekognition for comprehensive content analysis
+    Leverage OpenAI, Google Vision AI, and Amazon Rekognition for comprehensive
+    content analysis
   </Card>
   <Card title="Rule-Based Filtering" icon="filter">
     Create custom rules with regex patterns and confidence thresholds
@@ -46,13 +47,15 @@ Get started with the Pixel Patrol API in minutes:
 The Pixel Patrol API consists of two main endpoints:
 
 ### Submit Media
+
 Submit text content, image URLs, or both for moderation analysis.
 
 ```bash
 POST /submit-media
 ```
 
-### Get Media Status  
+### Get Media Status
+
 Check the moderation status of previously submitted content.
 
 ```bash
@@ -71,7 +74,8 @@ Pixel Patrol uses site keys for authentication. Include your site key in the req
 ```
 
 <Note>
-No authorization headers required! Simply include your site key in the request body.
+  No authorization headers required! Simply include your site key in the request
+  body.
 </Note>
 
 ## OpenAPI Specification
@@ -79,14 +83,10 @@ No authorization headers required! Simply include your site key in the request b
 Our API is fully documented using OpenAPI 3.0. You can:
 
 - **Explore endpoints** using the interactive playground below
-- **Generate client libraries** for your preferred programming language  
+- **Generate client libraries** for your preferred programming language
 - **Import the spec** into tools like Postman or Insomnia
 
-<Card
-  title="OpenAPI Specification"
-  icon="code"
-  href="/openapi.json"
->
+<Card title="OpenAPI Specification" icon="code" href="/openapi.json">
   View the complete OpenAPI specification file
 </Card>
 
@@ -115,7 +115,11 @@ Need help getting started?
   <Card title="Documentation" icon="book" href="/quickstart">
     Comprehensive guides and tutorials
   </Card>
-  <Card title="Email Support" icon="envelope" href="mailto:support@pixelpatrol.net">
+  <Card
+    title="Email Support"
+    icon="envelope"
+    href="mailto:support@pixelpatrol.net"
+  >
     Get help from our support team
   </Card>
 </CardGroup>
