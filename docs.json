@@ -58,7 +58,10 @@
           },
           {
             "group": "Endpoints",
-            "openapi": "openapi.json"
+            "openapi": {
+              "source": "openapi.json",
+              "directory": "api-reference"
+            }
           },
           {
             "group": "Webhook Events",
