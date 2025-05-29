@@ -39,7 +39,7 @@ Fill in the basic details for your site:
 </ParamField>
 
 <ParamField path="description" type="string">
-  Optional description to help team members understand this site's purpose
+  **Important**: Description that provides context to the AI moderation system about your site's purpose, target audience, and content standards. This helps the AI make appropriate moderation decisions based on your site's specific context.
 </ParamField>
 
 ### Example Configuration
@@ -48,7 +48,7 @@ Fill in the basic details for your site:
 {
   "name": "Community Forum",
   "url": "https://forum.example.com",
-  "description": "Our main community discussion forum requiring active moderation"
+  "description": "A professional business community forum for discussing industry trends, networking, and sharing business insights. Target audience: working professionals aged 25-55. Content should be business-appropriate, professional, and suitable for workplace discussion."
 }
 ```
 
@@ -250,6 +250,7 @@ After creation, you can:
 ```json
 {
   "name": "Product Reviews",
+  "description": "E-commerce platform for outdoor sporting goods. Users post product reviews, photos of gear in use, and outdoor activity content. Target audience: outdoor enthusiasts, athletes, ages 18-65. Content should be family-friendly and focused on product experiences.",
   "moderation_type": "hybrid",
   "confidence_threshold": 0.8,
   "rule_groups": ["spam_detection", "competitor_mentions"]
@@ -261,6 +262,7 @@ After creation, you can:
 ```json
 {
   "name": "User Posts",
+  "description": "General social media platform for adults to share life updates, photos, and discussions. Target audience: adults 18+. Content standards: no explicit material, hate speech, or dangerous activities. Casual social content is encouraged.",
   "moderation_type": "ai",
   "confidence_threshold": 0.75,
   "webhook_enabled": true,
@@ -273,6 +275,7 @@ After creation, you can:
 ```json
 {
   "name": "Contact Forms",
+  "description": "Professional corporate website contact forms for a financial services company. All content should be business-appropriate, professional, and suitable for client communication. No promotional content or spam.",
   "moderation_type": "rules",
   "rule_groups": ["profanity_filter", "spam_detection"]
 }
@@ -306,10 +309,11 @@ After creation, you can:
 **Site Organization Tips:**
 
 1. **Use descriptive names**: "Mobile App - User Comments" instead of "App 1"
-2. **Group by purpose**: Create separate sites for different content types
-3. **Document webhook endpoints**: Keep track of which endpoints handle which sites
-4. **Test thoroughly**: Always test moderation settings with real content samples
-5. **Monitor regularly**: Check analytics to fine-tune your configuration
+2. **Write detailed descriptions**: Provide clear context about your site's purpose, audience, and content standards to help AI make appropriate moderation decisions
+3. **Group by purpose**: Create separate sites for different content types
+4. **Document webhook endpoints**: Keep track of which endpoints handle which sites
+5. **Test thoroughly**: Always test moderation settings with real content samples
+6. **Monitor regularly**: Check analytics to fine-tune your configuration
 
 </Tip>
 
