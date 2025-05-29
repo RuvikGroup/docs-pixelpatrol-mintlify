@@ -58,16 +58,8 @@
             ]
           },
           {
-            "group": "API Reference",
-            "pages": [
-              {
-                "group": "Endpoints",
-                "openapi": {
-                  "source": "https://raw.githubusercontent.com/RuvikGroup/docs-pixelpatrol-mintlify/refs/heads/master/openapi.json",
-                  "directory": "api-reference"
-                }
-              }
-            ]
+            "group": "Endpoints",
+            "openapi": "./openapi.json"
           },
           {
             "group": "Webhooks",
