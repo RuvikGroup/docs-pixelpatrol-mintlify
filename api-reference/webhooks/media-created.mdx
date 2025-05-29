@@ -1,0 +1,105 @@
+---
+title: 'media.created'
+description: 'Webhook event fired when media is submitted for moderation'
+---
+
+## Event Overview
+
+The `media.created` event is triggered immediately after media is successfully submitted through the `/submit-media` endpoint. This allows you to track when content enters the moderation queue.
+
+## Payload Structure
+
+```json
+{
+  "event": "media.created",
+  "timestamp": "2024-01-15T14:30:00Z",
+  "data": {
+    "media_id": "123e4567-e89b-12d3-a456-426614174000",
+    "app_media_id": "user-upload-123",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "pending",
+    "content_type": "image",
+    "created_at": "2024-01-15T14:30:00Z",
+    "metadata": {
+      "user_id": "abc-987",
+      "gender": "male"
+    }
+  }
+}
+```
+
+## Payload Fields
+
+<ParamField body="event" type="string" required>
+  The event type. Always `media.created` for this event.
+</ParamField>
+
+<ParamField body="timestamp" type="string" required>
+  ISO 8601 timestamp of when the event occurred.
+</ParamField>
+
+<ParamField body="data.media_id" type="string" required>
+  Unique identifier for the media item in Pixel Patrol.
+</ParamField>
+
+<ParamField body="data.app_media_id" type="string">
+  Your application's identifier for this media item.
+</ParamField>
+
+<ParamField body="data.site_id" type="string" required>
+  The site ID associated with this media submission.
+</ParamField>
+
+<ParamField body="data.status" type="string" required>
+  The current status. Always `pending` for newly created media.
+</ParamField>
+
+<ParamField body="data.content_type" type="string" required>
+  Type of content: `text`, `image`, or `video`.
+</ParamField>
+
+<ParamField body="data.created_at" type="string" required>
+  Timestamp when the media was created.
+</ParamField>
+
+<ParamField body="data.metadata" type="object">
+  Custom metadata provided during submission.
+</ParamField>
+
+## Example Implementation
+
+```javascript
+app.post('/webhook', (req, res) => {
+  const signature = req.headers['x-pixelpatrol-signature'];
+  
+  // Verify signature (see verification guide)
+  if (!verifyWebhookSignature(req.body, signature)) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  const { event, data } = req.body;
+  
+  if (event === 'media.created') {
+    // Track media submission in your system
+    console.log(`Media ${data.media_id} submitted for moderation`);
+    
+    // Update your database
+    await db.media.update({
+      where: { id: data.app_media_id },
+      data: { 
+        pixelpatrol_id: data.media_id,
+        moderation_status: 'pending'
+      }
+    });
+  }
+  
+  res.status(200).send('OK');
+});
+```
+
+## Use Cases
+
+- **Tracking**: Monitor submission rates and queue sizes
+- **User Notifications**: Inform users their content is being reviewed
+- **Analytics**: Track submission patterns and volumes
+- **Synchronization**: Keep your database in sync with moderation status

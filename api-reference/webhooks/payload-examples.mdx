@@ -1,0 +1,248 @@
+---
+title: 'Webhook Payload Examples'
+description: 'Complete examples of webhook payloads for different scenarios'
+---
+
+## Overview
+
+This page provides complete webhook payload examples for various scenarios to help you understand and test your webhook integration.
+
+## Media Created Examples
+
+### Image Submission
+
+```json
+{
+  "event": "media.created",
+  "timestamp": "2024-01-15T14:30:00Z",
+  "data": {
+    "media_id": "123e4567-e89b-12d3-a456-426614174000",
+    "app_media_id": "profile-pic-12345",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "pending",
+    "content_type": "image",
+    "created_at": "2024-01-15T14:30:00Z",
+    "metadata": {
+      "user_id": "user-789",
+      "upload_source": "mobile_app",
+      "image_type": "profile_picture"
+    }
+  }
+}
+```
+
+### Text Submission
+
+```json
+{
+  "event": "media.created",
+  "timestamp": "2024-01-15T15:00:00Z",
+  "data": {
+    "media_id": "456e7890-e89b-12d3-a456-426614174111",
+    "app_media_id": "comment-98765",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "pending",
+    "content_type": "text",
+    "created_at": "2024-01-15T15:00:00Z",
+    "metadata": {
+      "user_id": "user-456",
+      "comment_thread": "thread-123",
+      "platform": "web"
+    }
+  }
+}
+```
+
+## Media Moderated Examples
+
+### Content Approved
+
+```json
+{
+  "event": "media.moderated",
+  "timestamp": "2024-01-15T14:35:00Z",
+  "data": {
+    "media_id": "123e4567-e89b-12d3-a456-426614174000",
+    "app_media_id": "profile-pic-12345",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "approved",
+    "previous_status": "pending",
+    "moderation_type": "ai",
+    "moderated_at": "2024-01-15T14:35:00Z",
+    "moderation_details": {
+      "ai_analysis": {
+        "adult": 0.02,
+        "violence": 0.01,
+        "hate": 0.00,
+        "self_harm": 0.00
+      },
+      "processing_time_ms": 1250
+    },
+    "metadata": {
+      "user_id": "user-789",
+      "upload_source": "mobile_app",
+      "image_type": "profile_picture"
+    }
+  }
+}
+```
+
+### Content Rejected - Adult Content
+
+```json
+{
+  "event": "media.moderated",
+  "timestamp": "2024-01-15T16:00:00Z",
+  "data": {
+    "media_id": "789e0123-e89b-12d3-a456-426614174222",
+    "app_media_id": "upload-55555",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "rejected",
+    "previous_status": "pending",
+    "moderation_type": "ai",
+    "moderated_at": "2024-01-15T16:00:00Z",
+    "moderation_details": {
+      "rule_violations": [
+        {
+          "rule_id": "550e8400-e29b-41d4-a716-446655440000",
+          "rule_name": "No Adult Content",
+          "rule_type": "ai_threshold",
+          "confidence": 0.95,
+          "details": "Adult content detected with high confidence"
+        }
+      ],
+      "ai_analysis": {
+        "adult": 0.95,
+        "violence": 0.10,
+        "hate": 0.05,
+        "self_harm": 0.02
+      },
+      "processing_time_ms": 1500
+    },
+    "metadata": {
+      "user_id": "user-123",
+      "upload_type": "post"
+    }
+  }
+}
+```
+
+### Content Rejected - Text Profanity
+
+```json
+{
+  "event": "media.moderated",
+  "timestamp": "2024-01-15T17:30:00Z",
+  "data": {
+    "media_id": "abc12345-e89b-12d3-a456-426614174333",
+    "app_media_id": "comment-77777",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "rejected",
+    "previous_status": "pending",
+    "moderation_type": "rule",
+    "moderated_at": "2024-01-15T17:30:00Z",
+    "moderation_details": {
+      "rule_violations": [
+        {
+          "rule_id": "660e9500-e29b-41d4-a716-446655440111",
+          "rule_name": "Profanity Filter",
+          "rule_type": "keyword",
+          "confidence": 1.0,
+          "details": "Blocked word detected: [redacted]",
+          "matched_text": "f***"
+        }
+      ],
+      "processing_time_ms": 50
+    },
+    "metadata": {
+      "user_id": "user-999",
+      "comment_thread": "thread-456"
+    }
+  }
+}
+```
+
+### Content Flagged for Review
+
+```json
+{
+  "event": "media.moderated",
+  "timestamp": "2024-01-15T18:00:00Z",
+  "data": {
+    "media_id": "def45678-e89b-12d3-a456-426614174444",
+    "app_media_id": "post-88888",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "pending_review",
+    "previous_status": "pending",
+    "moderation_type": "ai",
+    "moderated_at": "2024-01-15T18:00:00Z",
+    "moderation_details": {
+      "reason": "Borderline content requiring human review",
+      "ai_analysis": {
+        "adult": 0.45,
+        "violence": 0.52,
+        "hate": 0.15,
+        "self_harm": 0.08
+      },
+      "flagged_categories": ["violence"],
+      "processing_time_ms": 1800
+    },
+    "metadata": {
+      "user_id": "user-555",
+      "content_type": "news_article"
+    }
+  }
+}
+```
+
+## Test Webhook Example
+
+```json
+{
+  "event": "webhook.test.ping",
+  "timestamp": "2024-01-15T12:00:00Z",
+  "data": {
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "test": true,
+    "message": "This is a test webhook from Pixel Patrol"
+  },
+  "_pixelpatrol_signature": "sha256=a4771c3915c94f4b0d9c0f238a5c5d2e8f9b1e3d7a6c9f2b5e8d4a1c7e9f3b2a"
+}
+```
+
+## Webhook Headers
+
+All production webhooks (non-test) include these headers:
+
+```http
+POST /your-webhook-endpoint HTTP/1.1
+Host: your-domain.com
+Content-Type: application/json
+X-PixelPatrol-Signature: sha256=7d38cdd689735b008b3c702edd92eea23791c5f6
+X-PixelPatrol-Event: media.moderated
+X-PixelPatrol-Delivery-ID: 550e8400-e29b-41d4-a716-446655440000
+User-Agent: PixelPatrol-Webhook/1.0
+```
+
+## Testing with cURL
+
+You can test your webhook endpoint using cURL:
+
+```bash
+# Test webhook reception (without signature verification)
+curl -X POST https://your-domain.com/webhook \
+  -H "Content-Type: application/json" \
+  -H "X-PixelPatrol-Event: media.created" \
+  -d '{
+    "event": "media.created",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "data": {
+      "media_id": "123e4567-e89b-12d3-a456-426614174000",
+      "app_media_id": "test-123",
+      "site_id": "98765432-dcba-4321-fedc-210987654321",
+      "status": "pending",
+      "content_type": "image",
+      "created_at": "2024-01-15T14:30:00Z"
+    }
+  }'
+```

@@ -1,0 +1,115 @@
+---
+title: 'webhook.test.ping'
+description: 'Test webhook event for verifying integration'
+---
+
+## Event Overview
+
+The `webhook.test.ping` event is a special test event that can be triggered from the Pixel Patrol dashboard to verify your webhook endpoint is correctly configured and receiving events.
+
+<Note>
+  Test webhooks have a different signature format. The signature is included in the JSON body under `_pixelpatrol_signature` instead of the `X-PixelPatrol-Signature` header.
+</Note>
+
+## Payload Structure
+
+```json
+{
+  "event": "webhook.test.ping",
+  "timestamp": "2024-01-15T14:00:00Z",
+  "data": {
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "test": true,
+    "message": "This is a test webhook from Pixel Patrol"
+  },
+  "_pixelpatrol_signature": "sha256=7d38cdd689735b008b3c702edd92eea23791c5f6"
+}
+```
+
+## Payload Fields
+
+<ParamField body="event" type="string" required>
+  The event type. Always `webhook.test.ping` for test events.
+</ParamField>
+
+<ParamField body="timestamp" type="string" required>
+  ISO 8601 timestamp of when the test was sent.
+</ParamField>
+
+<ParamField body="data.site_id" type="string" required>
+  The site ID this test webhook is for.
+</ParamField>
+
+<ParamField body="data.test" type="boolean" required>
+  Always `true` for test events.
+</ParamField>
+
+<ParamField body="data.message" type="string" required>
+  A human-readable test message.
+</ParamField>
+
+<ParamField body="_pixelpatrol_signature" type="string" required>
+  HMAC-SHA256 signature for verification (in body for test events).
+</ParamField>
+
+## Verification Differences
+
+Test webhooks require special handling for signature verification:
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  const { event, _pixelpatrol_signature } = req.body;
+  
+  if (event === 'webhook.test.ping') {
+    // For test events, signature is in the body
+    const bodyWithoutSignature = { ...req.body };
+    delete bodyWithoutSignature._pixelpatrol_signature;
+    
+    // Verify using the body without the signature field
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.WEBHOOK_SECRET)
+      .update(JSON.stringify(bodyWithoutSignature))
+      .digest('hex');
+    
+    const signature = _pixelpatrol_signature.replace('sha256=', '');
+    
+    if (signature !== expectedSignature) {
+      return res.status(401).send('Invalid signature');
+    }
+    
+    console.log('Test webhook received successfully');
+    return res.status(200).send('Test webhook received');
+  }
+  
+  // Handle regular events with header signature
+  const headerSignature = req.headers['x-pixelpatrol-signature'];
+  // ... regular verification logic
+});
+```
+
+## Testing Your Integration
+
+1. **Configure Webhook URL**: Set your endpoint URL in the Pixel Patrol dashboard
+2. **Add Webhook Secret**: Generate and save a secure webhook secret
+3. **Send Test Event**: Click "Test Webhook" button in the dashboard
+4. **Verify Receipt**: Check your logs for the test event
+5. **Confirm Response**: Ensure your endpoint returns 200 OK
+
+## Example Response
+
+Your endpoint should return a 2xx status code to indicate successful receipt:
+
+```javascript
+// Success response
+res.status(200).json({
+  received: true,
+  message: 'Test webhook processed successfully'
+});
+```
+
+## Common Issues
+
+- **401 Unauthorized**: Signature verification failed - check your webhook secret
+- **404 Not Found**: Webhook URL is incorrect or not accessible
+- **500 Server Error**: Your endpoint has an error - check server logs
+- **Timeout**: Endpoint took too long to respond (>30 seconds)

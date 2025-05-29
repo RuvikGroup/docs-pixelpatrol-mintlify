@@ -1,0 +1,171 @@
+---
+title: 'media.moderated'
+description: 'Webhook event fired when media moderation is completed'
+---
+
+## Event Overview
+
+The `media.moderated` event is triggered when the moderation process completes for a media item. This includes both AI-based and manual moderation decisions.
+
+## Payload Structure
+
+```json
+{
+  "event": "media.moderated",
+  "timestamp": "2024-01-15T14:35:00Z",
+  "data": {
+    "media_id": "123e4567-e89b-12d3-a456-426614174000",
+    "app_media_id": "user-upload-123",
+    "site_id": "98765432-dcba-4321-fedc-210987654321",
+    "status": "rejected",
+    "previous_status": "pending",
+    "moderation_type": "ai",
+    "moderated_at": "2024-01-15T14:35:00Z",
+    "moderation_details": {
+      "rule_violations": [
+        {
+          "rule_id": "550e8400-e29b-41d4-a716-446655440000",
+          "rule_name": "Inappropriate Content",
+          "confidence": 0.95,
+          "details": "Adult content detected"
+        }
+      ],
+      "ai_analysis": {
+        "adult": 0.95,
+        "violence": 0.10,
+        "hate": 0.05
+      }
+    },
+    "metadata": {
+      "user_id": "abc-987",
+      "gender": "male"
+    }
+  }
+}
+```
+
+## Payload Fields
+
+<ParamField body="event" type="string" required>
+  The event type. Always `media.moderated` for this event.
+</ParamField>
+
+<ParamField body="timestamp" type="string" required>
+  ISO 8601 timestamp of when the event occurred.
+</ParamField>
+
+<ParamField body="data.media_id" type="string" required>
+  Unique identifier for the media item in Pixel Patrol.
+</ParamField>
+
+<ParamField body="data.app_media_id" type="string">
+  Your application's identifier for this media item.
+</ParamField>
+
+<ParamField body="data.site_id" type="string" required>
+  The site ID associated with this media.
+</ParamField>
+
+<ParamField body="data.status" type="string" required>
+  The new moderation status: `approved`, `rejected`, or `pending_review`.
+</ParamField>
+
+<ParamField body="data.previous_status" type="string" required>
+  The status before moderation.
+</ParamField>
+
+<ParamField body="data.moderation_type" type="string" required>
+  How the content was moderated: `ai`, `manual`, or `rule`.
+</ParamField>
+
+<ParamField body="data.moderated_at" type="string" required>
+  Timestamp when moderation completed.
+</ParamField>
+
+<ParamField body="data.moderation_details" type="object">
+  Detailed information about the moderation decision.
+</ParamField>
+
+<ParamField body="data.moderation_details.rule_violations" type="array">
+  List of rules that were violated (if any).
+</ParamField>
+
+<ParamField body="data.moderation_details.ai_analysis" type="object">
+  AI confidence scores for different content categories.
+</ParamField>
+
+<ParamField body="data.metadata" type="object">
+  Custom metadata provided during submission.
+</ParamField>
+
+## Status Values
+
+- **approved**: Content passed moderation and is safe to display
+- **rejected**: Content violated one or more rules and should not be displayed
+- **pending_review**: Content requires manual review by a moderator
+
+## Example Implementation
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  const signature = req.headers['x-pixelpatrol-signature'];
+  
+  // Verify signature
+  if (!verifyWebhookSignature(req.body, signature)) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  const { event, data } = req.body;
+  
+  if (event === 'media.moderated') {
+    switch (data.status) {
+      case 'approved':
+        // Make content visible
+        await db.media.update({
+          where: { id: data.app_media_id },
+          data: { 
+            status: 'published',
+            visible: true
+          }
+        });
+        break;
+        
+      case 'rejected':
+        // Handle rejected content
+        await db.media.update({
+          where: { id: data.app_media_id },
+          data: { 
+            status: 'rejected',
+            visible: false,
+            rejection_reason: data.moderation_details.rule_violations[0]?.details
+          }
+        });
+        
+        // Notify user
+        await notifyUser(data.metadata.user_id, 'Content rejected');
+        break;
+        
+      case 'pending_review':
+        // Flag for manual review
+        await db.media.update({
+          where: { id: data.app_media_id },
+          data: { 
+            status: 'under_review',
+            visible: false
+          }
+        });
+        break;
+    }
+  }
+  
+  res.status(200).send('OK');
+});
+```
+
+## Use Cases
+
+- **Content Publishing**: Automatically publish approved content
+- **User Notifications**: Inform users about moderation decisions
+- **Content Removal**: Remove or hide rejected content
+- **Manual Review Queue**: Route edge cases to human moderators
+- **Analytics**: Track approval/rejection rates and reasons

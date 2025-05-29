@@ -55,7 +55,7 @@ Changes pushed to the main branch will be automatically deployed via Mintlify's 
 
 ## 📞 Support
 
-For questions about the documentation, please contact support@pixelpatrol.net.
+For questions about the documentation, please contact hello@pixelpatrol.net.
 
 ## Troubleshooting
 

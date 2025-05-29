@@ -46,7 +46,38 @@
       },
       {
         "tab": "API Reference",
-        "openapi": "openapi.json"
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/rate-limits",
+              "api-reference/errors"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "openapi": "openapi.json"
+          },
+          {
+            "group": "Webhook Events",
+            "pages": [
+              "api-reference/webhooks/overview",
+              "api-reference/webhooks/media-created",
+              "api-reference/webhooks/media-moderated",
+              "api-reference/webhooks/webhook-test"
+            ]
+          },
+          {
+            "group": "Webhook Integration",
+            "pages": [
+              "api-reference/webhooks/verification",
+              "api-reference/webhooks/retry-logic",
+              "api-reference/webhooks/payload-examples"
+            ]
+          }
+        ]
       },
       {
         "tab": "Tutorials",
@@ -136,7 +167,7 @@
         },
         {
           "anchor": "Support",
-          "href": "mailto:support@pixelpatrol.net",
+          "href": "mailto:hello@pixelpatrol.net",
           "icon": "envelope"
         }
       ]
