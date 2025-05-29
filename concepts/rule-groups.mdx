@@ -1,0 +1,334 @@
+---
+title: Rule Groups
+description: Organize moderation rules into logical groups for different areas of your application
+icon: folder-tree
+---
+
+## Overview
+
+Rule Groups are containers that organize multiple moderation rules for specific contexts within your application. They enable you to apply different moderation strategies to different types of content, ensuring appropriate and contextual moderation across your platform.
+
+## Why Rule Groups?
+
+Different areas of your application require different moderation approaches:
+
+<CardGroup cols={2}>
+  <Card title="Profile Images" icon="user-circle">
+    May require stricter rules for inappropriate content, ensuring professional appearance
+  </Card>
+  
+  <Card title="Forum Posts" icon="comments">
+    May focus on hate speech, spam, and maintaining constructive discussions
+  </Card>
+  
+  <Card title="Product Reviews" icon="star">
+    May emphasize authenticity, preventing fake reviews and promotional content
+  </Card>
+  
+  <Card title="Private Messages" icon="envelope">
+    May have more lenient rules while still preventing harassment
+  </Card>
+</CardGroup>
+
+## Creating Rule Groups
+
+### Basic Setup
+
+1. Navigate to your site in the dashboard
+2. Click on "Rule Groups" 
+3. Create your first rule group
+4. Give it a descriptive name (e.g., "Profile Images", "Forum Posts")
+5. Optionally set it as the default group
+
+### Rule Group Properties
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| Name | Descriptive identifier | "User Profile Images" |
+| Description | Purpose and context | "Moderation rules for user avatar uploads" |
+| Is Default | Auto-applies to content without specified group | `true` / `false` |
+| Site ID | Associated site | Automatically set |
+
+## Working with Rules
+
+### Adding Rules to Groups
+
+Each rule group can contain multiple rules that work together:
+
+```typescript
+// Example rule structure within a group
+{
+  "rule_group_id": "rg_123",
+  "rules": [
+    {
+      "name": "Inappropriate Content Filter",
+      "template": "nsfw_content",
+      "is_active": true,
+      "confidence_threshold": 0.85
+    },
+    {
+      "name": "Face Detection Required",
+      "template": "face_detection",
+      "is_active": true,
+      "evaluation_type": "requirement"
+    }
+  ]
+}
+```
+
+### Rule Templates
+
+Pixel Patrol provides pre-configured rule templates that you can use or customize:
+
+<AccordionGroup>
+  <Accordion title="NSFW Content Detection">
+    Detects inappropriate or adult content in images
+    - Default confidence threshold: 0.85
+    - Evaluation type: Restriction
+  </Accordion>
+  
+  <Accordion title="Violence Detection">
+    Identifies violent or disturbing imagery
+    - Default confidence threshold: 0.80
+    - Evaluation type: Restriction
+  </Accordion>
+  
+  <Accordion title="Text Profanity Filter">
+    Scans text for inappropriate language
+    - Default confidence threshold: 0.75
+    - Evaluation type: Restriction
+  </Accordion>
+  
+  <Accordion title="Spam Detection">
+    Identifies potential spam content
+    - Default confidence threshold: 0.70
+    - Evaluation type: Restriction
+  </Accordion>
+  
+  <Accordion title="Gender-Based Rules">
+    Apply rules based on user's stated gender
+    - Requires gender parameter in metadata
+    - Evaluation type: Conditional
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Parameters
+
+Some rule templates support advanced parameters that must be provided during media submission:
+
+### Gender-Based Moderation Example
+
+Rule configuration with advanced parameters:
+```json
+{
+  "type": "object",
+  "required": ["gender"],
+  "properties": {
+    "gender": {
+      "type": "string",
+      "description": "User's stated gender (e.g., male, female, non-binary)"
+    }
+  }
+}
+```
+
+API submission with required metadata:
+```json
+{
+  "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+  "content_url": "https://example.com/image.jpg",
+  "rule_group_id": "rg_profile_images",
+  "metadata": {
+    "gender": "male",
+    "user_id": "user_123",
+    "context": "profile_photo"
+  }
+}
+```
+
+## Using Rule Groups in API Calls
+
+### Specifying a Rule Group
+
+When submitting content for moderation, specify which rule group to use:
+
+```javascript
+const result = await pixelPatrol.submitMedia({
+  content_url: imageUrl,
+  rule_group_id: 'rg_profile_images', // Specific rule group
+  app_media_id: `profile-${userId}`,
+  metadata: {
+    context: 'profile_photo',
+    user_id: userId
+  }
+});
+```
+
+### Default Rule Group
+
+If no rule group is specified, the default rule group for the site will be used:
+
+```javascript
+// Uses default rule group
+const result = await pixelPatrol.submitMedia({
+  content_url: imageUrl,
+  app_media_id: `content-${contentId}`
+});
+```
+
+## Best Practices
+
+### Organization Strategies
+
+1. **Context-Based Groups**: Create groups based on where content appears
+   - User Profiles
+   - Public Posts
+   - Private Messages
+   - Comments
+
+2. **Risk-Based Groups**: Organize by risk level
+   - High Risk (public facing)
+   - Medium Risk (authenticated users)
+   - Low Risk (trusted users)
+
+3. **Media Type Groups**: Separate by content type
+   - Images
+   - Videos
+   - Text Content
+
+### Configuration Tips
+
+<Tabs>
+  <Tab title="Profile Images">
+    ```json
+    {
+      "name": "Profile Images",
+      "rules": [
+        { "template": "nsfw_content", "threshold": 0.90 },
+        { "template": "face_detection", "required": true },
+        { "template": "violence", "threshold": 0.85 }
+      ]
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Forum Posts">
+    ```json
+    {
+      "name": "Forum Posts",
+      "rules": [
+        { "template": "hate_speech", "threshold": 0.80 },
+        { "template": "spam_detection", "threshold": 0.75 },
+        { "template": "profanity", "threshold": 0.70 }
+      ]
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Product Reviews">
+    ```json
+    {
+      "name": "Product Reviews",
+      "rules": [
+        { "template": "authenticity_check", "threshold": 0.85 },
+        { "template": "promotional_content", "threshold": 0.80 },
+        { "template": "profanity", "threshold": 0.60 }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Performance Considerations
+
+- **Rule Order**: Rules are evaluated in parallel for performance
+- **Caching**: Rule group configurations are cached for fast access
+- **Limits**: Consider your plan's moderation limits when designing rule groups
+
+## Management Features
+
+### Copying Rule Groups
+
+Quickly duplicate successful configurations:
+1. Click the copy button on any rule group
+2. Modify the name and rules as needed
+3. Save the new group
+
+### Updating Rules
+
+Rules can be updated without affecting ongoing moderations:
+- Changes apply to new submissions only
+- Historical moderation results remain unchanged
+- Test changes with sample content first
+
+### Deleting Groups
+
+<Warning>
+  You cannot delete the last rule group for a site. Ensure at least one group remains active.
+</Warning>
+
+## Integration Examples
+
+### E-commerce Platform
+
+```javascript
+// Product images
+await submitMedia({
+  content_url: productImageUrl,
+  rule_group_id: 'rg_product_images',
+  metadata: {
+    category: 'electronics',
+    seller_id: sellerId
+  }
+});
+
+// Customer reviews
+await submitMedia({
+  body: reviewText,
+  rule_group_id: 'rg_customer_reviews',
+  metadata: {
+    product_id: productId,
+    rating: 5
+  }
+});
+```
+
+### Social Media Application
+
+```javascript
+// User avatars
+await submitMedia({
+  content_url: avatarUrl,
+  rule_group_id: 'rg_user_avatars',
+  metadata: {
+    gender: userGender,
+    age_group: 'adult'
+  }
+});
+
+// Post content
+await submitMedia({
+  content_url: postImageUrl,
+  body: postText,
+  rule_group_id: 'rg_public_posts',
+  metadata: {
+    visibility: 'public',
+    hashtags: ['travel', 'photography']
+  }
+});
+```
+
+## Monitoring & Analytics
+
+Track rule group performance:
+- **Approval rates** per rule group
+- **Most triggered rules** within each group
+- **Processing time** by group complexity
+- **False positive rates** for tuning
+
+## Related Topics
+
+- [Rules](/concepts/rules) - Individual rule configuration
+- [Moderation](/concepts/moderation) - How moderation decisions are made
+- [Sites](/concepts/sites) - Site-level configuration
+- [API Integration](/guides/api-integration) - Using rule groups in API calls

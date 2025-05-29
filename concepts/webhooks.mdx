@@ -13,7 +13,7 @@ Webhooks provide real-time notifications when moderation events occur. They enab
 ### Available Events
 
 <CardGroup cols={2}>
-  <Card title="media.submitted" icon="upload">
+  <Card title="media.created" icon="upload">
     Triggered when new media is submitted for moderation
   </Card>
   
@@ -21,12 +21,8 @@ Webhooks provide real-time notifications when moderation events occur. They enab
     Triggered when moderation is complete
   </Card>
   
-  <Card title="media.updated" icon="pencil">
-    Triggered when media status changes
-  </Card>
-  
-  <Card title="media.remoderated" icon="refresh">
-    Triggered when content is re-analyzed
+  <Card title="test.webhook" icon="vial">
+    Test event for webhook verification
   </Card>
 </CardGroup>
 
@@ -46,7 +42,7 @@ Webhooks provide real-time notifications when moderation events occur. They enab
 {
   "url": "https://your-app.com/webhooks/pixel-patrol",
   "secret": "your-webhook-secret-key",
-  "events": ["media.moderated", "media.updated"],
+  "events": ["media.created", "media.moderated"],
   "active": true
 }
 ```
@@ -58,7 +54,9 @@ Webhooks provide real-time notifications when moderation events occur. They enab
 All webhook requests include a signature header:
 
 ```http
-X-Webhook-Signature: sha256=3f3d7c4b5e6789abcdef1234567890abcdef1234567890abcdef1234567890ab
+X-PixelPatrol-Signature: 3f3d7c4b5e6789abcdef1234567890abcdef1234567890abcdef1234567890ab
+X-PixelPatrol-Timestamp: 1705745400000
+X-PixelPatrol-Event: media.moderated
 ```
 
 ### Signature Verification
@@ -75,7 +73,7 @@ function verifyWebhookSignature(
     .update(payload)
     .digest('hex');
   
-  return `sha256=${expected}` === signature;
+  return expected === signature;
 }
 ```
 
@@ -115,14 +113,13 @@ Each event type includes relevant data:
 }
 ```
 
-#### media.updated
+#### test.webhook
 ```json
 {
-  "media_id": "media_456",
-  "previous_status": "pending",
-  "new_status": "approved",
-  "updated_by": "moderator_id",
-  "updated_at": "2024-01-20T10:30:00Z"
+  "media_id": "test_456",
+  "status": "test",
+  "is_test": true,
+  "message": "Test webhook received successfully"
 }
 ```
 
@@ -162,7 +159,7 @@ import express from 'express';
 const app = express();
 
 app.post('/webhooks/pixel-patrol', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-webhook-signature'];
+  const signature = req.headers['x-pixelpatrol-signature'];
   const payload = req.body.toString();
   
   // Verify signature
@@ -177,8 +174,8 @@ app.post('/webhooks/pixel-patrol', express.raw({ type: 'application/json' }), (r
     case 'media.moderated':
       handleMediaModerated(event.data);
       break;
-    case 'media.updated':
-      handleMediaUpdated(event.data);
+    case 'test.webhook':
+      console.log('Test webhook received');
       break;
   }
   

@@ -18,8 +18,7 @@
             "pages": [
               "index",
               "quickstart",
-              "installation",
-              "architecture"
+              "installation"
             ]
           },
           {
@@ -27,6 +26,7 @@
             "pages": [
               "concepts/teams",
               "concepts/sites",
+              "concepts/rule-groups",
               "concepts/rules",
               "concepts/moderation",
               "concepts/webhooks"

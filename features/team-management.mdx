@@ -146,25 +146,19 @@ All operations respect team context:
 
 ## Team Creation
 
-### Creating New Teams
+### Automatic Team Creation
 
-```typescript
-const team = await createTeam({
-  name: 'Content Moderation Team',
-  description: 'Main moderation team for ACME Corp',
-  settings: {
-    defaultModerationLevel: 'balanced',
-    notificationEmail: 'admin@acme.com'
-  }
-});
-```
+Teams are created automatically when:
+1. A new user signs up (they become the owner of their personal team)
+2. Users are invited to join existing teams
 
 ### Initial Setup
 
-1. **Team Profile**: Name and description
-2. **First Site**: Create initial site
-3. **Invite Members**: Build your team
-4. **Configure Rules**: Set moderation policies
+After a team is created:
+1. **First Site**: Create your initial site for moderation
+2. **Invite Members**: Build your team by inviting collaborators
+3. **Configure Rules**: Set up moderation policies for your content
+4. **Subscription**: Choose a plan that fits your needs
 
 ## Advanced Features
 

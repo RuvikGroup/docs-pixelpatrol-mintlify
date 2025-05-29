@@ -53,23 +53,13 @@ graph LR
 
 ## Event Types
 
-### Core Events
+### Available Events
 
 | Event | Description | Payload |
 |-------|-------------|---------|
-| `media.submitted` | New media received | Media details, metadata |
-| `media.moderated` | Moderation complete | Status, AI results, rules |
-| `media.updated` | Status changed | Previous/new status |
-| `media.remoderated` | Re-analysis complete | New results |
-
-### System Events
-
-| Event | Description | Payload |
-|-------|-------------|---------|
-| `rule.created` | New rule added | Rule configuration |
-| `rule.updated` | Rule modified | Changes |
-| `webhook.test` | Test webhook | Test data |
-| `subscription.updated` | Plan changed | Subscription details |
+| `media.created` | New media submitted | Media ID, site ID, status, timestamps |
+| `media.moderated` | Moderation complete | Status, AI results, rule evaluations |
+| `test.webhook` | Test webhook | Test data for verification |
 
 ## Implementation
 
@@ -80,8 +70,11 @@ Your webhook endpoint should:
 ```typescript
 app.post('/webhooks/pixel-patrol', async (req, res) => {
   // 1. Verify signature
-  const signature = req.headers['x-webhook-signature'];
-  if (!verifySignature(req.body, signature)) {
+  const signature = req.headers['x-pixelpatrol-signature'];
+  const timestamp = req.headers['x-pixelpatrol-timestamp'];
+  const event = req.headers['x-pixelpatrol-event'];
+  
+  if (!verifySignature(req.body, signature, timestamp)) {
     return res.status(401).json({ error: 'Invalid signature' });
   }
   
@@ -104,13 +97,21 @@ import { createHmac } from 'crypto';
 function verifySignature(
   payload: string,
   signature: string,
+  timestamp: string,
   secret: string
 ): boolean {
+  // Check timestamp to prevent replay attacks
+  const currentTime = Date.now();
+  const webhookTime = parseInt(timestamp);
+  if (Math.abs(currentTime - webhookTime) > 300000) { // 5 minutes
+    return false;
+  }
+  
   const expectedSignature = createHmac('sha256', secret)
     .update(payload)
     .digest('hex');
   
-  return `sha256=${expectedSignature}` === signature;
+  return expectedSignature === signature;
 }
 ```
 

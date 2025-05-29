@@ -294,8 +294,8 @@ async function handlePixelPatrolWebhook(req, res) {
       await handleModerationComplete(event.data);
       break;
     
-    case 'media.updated':
-      await handleMediaUpdate(event.data);
+    case 'media.created':
+      await handleMediaCreated(event.data);
       break;
     
     default:
@@ -511,13 +511,13 @@ describe('Webhook Handler', () => {
       data: { media_id: 'test_123' }
     };
     
-    const signature = 'sha256=' + crypto
+    const signature = crypto
       .createHmac('sha256', 'test_secret')
       .update(JSON.stringify(payload))
       .digest('hex');
     
     const req = {
-      headers: { 'x-webhook-signature': signature },
+      headers: { 'x-pixelpatrol-signature': signature },
       body: payload
     };
     

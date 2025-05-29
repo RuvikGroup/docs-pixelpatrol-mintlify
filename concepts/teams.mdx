@@ -42,19 +42,13 @@ Pixel Patrol implements team-based multi-tenancy:
   </Card>
 </CardGroup>
 
-## Creating a Team
+## Team Creation
 
 Teams are created automatically when:
 1. A new user signs up (becomes owner of their personal team)
-2. An existing user creates an additional team
-3. Through the team creation API
+2. Users without a team are assigned one automatically
 
-```typescript
-// Example: Creating a team via Edge Function
-const { data, error } = await supabase.functions.invoke('create-team', {
-  body: { name: 'My New Team' }
-})
-```
+Note: Manual team creation is not supported. Users can only belong to teams through automatic assignment or invitation.
 
 ## Team Switching
 
