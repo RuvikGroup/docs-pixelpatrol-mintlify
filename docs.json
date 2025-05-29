@@ -46,44 +46,7 @@
       },
       {
         "tab": "API Reference",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "api-reference/introduction",
-              "api-reference/authentication",
-              "api-reference/rate-limits",
-              "api-reference/errors"
-            ]
-          },
-          {
-            "group": "Media API",
-            "pages": [
-              "api-reference/media/submit",
-              "api-reference/media/status",
-              "api-reference/media/moderate",
-              "api-reference/media/batch"
-            ]
-          },
-          {
-            "group": "Webhooks",
-            "pages": [
-              "api-reference/webhooks/overview",
-              "api-reference/webhooks/verification",
-              "api-reference/webhooks/events",
-              "api-reference/webhooks/retry-logic"
-            ]
-          },
-          {
-            "group": "Rule Groups",
-            "pages": [
-              "api-reference/rule-groups/overview",
-              "api-reference/rule-groups/create",
-              "api-reference/rule-groups/update",
-              "api-reference/rule-groups/delete"
-            ]
-          }
-        ]
+        "openapi": "openapi.json"
       },
       {
         "tab": "Tutorials",
