@@ -6,157 +6,231 @@ icon: filter
 
 ## Overview
 
-Rules define how content is moderated in Pixel Patrol. They can be based on AI analysis results, metadata, or custom conditions, allowing for flexible and powerful content filtering.
+Rules define content moderation criteria in PixelPatrol. Each rule evaluates specific aspects of submitted content, and rules work together within [Rule Groups](/concepts/rule-groups) to provide comprehensive content filtering.
 
-## Rule Structure
+**Important**: All rule management is done through the dashboard interface - no API access is available for creating, editing, or managing rules.
 
-Rules in Pixel Patrol are organized within [Rule Groups](/concepts/rule-groups), which provide context and organization for your moderation strategy.
+## How Rules Work
 
-### Individual Rules
+### Rule Group Logic
 
-Each rule consists of:
-- **Name**: Descriptive identifier
-- **Type**: Evaluation method (AI-based, metadata, etc.)
-- **Conditions**: What triggers the rule
-- **Actions**: What happens when triggered
-- **Confidence Threshold**: Minimum confidence for AI rules
+Within each rule group, **ALL rules must pass** for content to be approved. If any single rule fails, the content is flagged for moderation. This ensures comprehensive content filtering without compromise.
 
-## Rule Types
+**Example**: A "Profile Photos" rule group with 3 rules:
+- ✅ No explicit content (passes)
+- ✅ Must have clear face (passes)  
+- ❌ **No children in photos** (fails)
+- **Result**: Content is rejected because one rule failed
+
+### Rule Types
 
 <CardGroup cols={2}>
-  <Card title="AI-Based Rules" icon="brain">
-    Evaluate AI moderation results:
-    - Violence detection
-    - Adult content
-    - Hate speech
-    - Custom AI labels
+  <Card title="Requirements" icon="circle-check">
+    Content must satisfy this condition:
+    - Must have clear face
+    - Must be high quality
+    - Must match profile
   </Card>
   
-  <Card title="Metadata Rules" icon="tags">
-    Check content metadata:
-    - File type
-    - Source URL
-    - User attributes
-    - Custom metadata
-  </Card>
-  
-  <Card title="Composite Rules" icon="layer-group">
-    Combine multiple conditions:
-    - AND/OR logic
-    - Nested conditions
-    - Complex workflows
-  </Card>
-  
-  <Card title="Threshold Rules" icon="sliders">
-    Numeric comparisons:
-    - Confidence scores
-    - File sizes
-    - Time-based rules
-    - Custom metrics
+  <Card title="Prohibitions" icon="ban">
+    Content must avoid this condition:
+    - No explicit content
+    - No violence/weapons
+    - No children
   </Card>
 </CardGroup>
 
-## Rule Evaluation
+## Available Rule Templates
 
-### Evaluation Order
+PixelPatrol provides 16 pre-built rule templates optimized for different moderation needs:
 
-1. Rules are evaluated by group priority
-2. Within groups, rules execute in defined order
-3. First matching rule determines the action
-4. Evaluation stops after first match
+### Content Safety
+- **Explicit Content** - Blocks NSFW/adult content
+- **Violence/Weapons** - Prevents violent imagery
+- **Drugs/Alcohol** - Filters substance-related content
+- **Offensive Gestures/Symbols** - Blocks inappropriate symbols
 
-### Actions
+### Image Quality
+- **No Clear/Focused Face** - Ensures face visibility
+- **Unclear/Blurry Image** - Maintains quality standards
+- **Fake/Generated Image** - Detects AI-generated content
+- **Screenshot Detected** - Prevents screenshot uploads
 
-When a rule matches, it can:
-- **Approve**: Mark content as safe
-- **Reject**: Mark content as inappropriate
-- **Flag**: Send for manual review
-- **Custom**: Trigger specific workflows
+### Content Compliance
+- **Contains Children** - Protects child safety
+- **Multiple Focal Points** - Ensures single-person focus
+- **Celebrity Detected** - Prevents celebrity photos
+- **Excessive Text** - Limits text overlays
 
-## Creating Rules
+### Privacy & Identity
+- **Consent/Privacy Violation** - Protects user privacy
+- **Offensive Text/Images** - Blocks inappropriate overlays
+- **Gender Mismatch** - Validates gender matches profile (requires advanced parameters)
 
-### Basic AI Rule Example
+### Custom Rules
+Create completely custom rules for specific business requirements not covered by templates.
 
-```json
+## Rule Configuration
+
+Each rule can be configured with:
+
+- **Name**: Descriptive identifier for the rule
+- **Description**: Explanation of what the rule does
+- **Evaluation Type**: Requirement or Prohibition
+- **Confidence Threshold**: How confident AI must be (50%-100%)
+- **Active Status**: Enable/disable without deleting
+- **Advanced Parameters**: Additional metadata requirements
+
+### Confidence Thresholds
+
+Set how confident the AI must be in its evaluation:
+- **High (85-95%)**: Fewer false positives, more false negatives
+- **Medium (70-85%)**: Balanced approach (recommended starting point)
+- **Low (50-70%)**: More false positives, fewer false negatives
+
+## Advanced Parameters
+
+Some rule templates support advanced parameters that use metadata from your media submissions for more precise moderation.
+
+### Gender Matching Example
+
+The "Gender Mismatch" rule requires gender information from media metadata:
+
+<CodeGroup>
+```json Advanced Parameters Schema
 {
-  "name": "Block Violent Content",
-  "type": "ai_label",
-  "conditions": {
-    "label": "violence",
-    "confidence": 0.8
-  },
-  "action": "reject"
+  "type": "object",
+  "required": [
+    "gender"
+  ],
+  "properties": {
+    "gender": {
+      "type": "string",
+      "description": "User's stated gender (e.g., male, female, non-binary)"
+    }
+  }
 }
 ```
 
-### Metadata Rule Example
-
-```json
+```json Media Submission
 {
-  "name": "Auto-Approve Verified Users",
-  "type": "metadata",
-  "conditions": {
-    "user.verified": true
-  },
-  "action": "approve"
+  "api_key": "site_xxxxxxxxxxxxxxxxxxxx",
+  "content_url": "https://example.com/profile-photo.jpg",
+  "app_media_id": "user-123-profile",
+  "metadata": {
+    "gender": "female",
+    "user_id": "user-123"
+  }
 }
 ```
+</CodeGroup>
 
-## Rule Templates
+The AI validates that the photo matches the stated gender, helping ensure profile authenticity.
 
-Pixel Patrol provides pre-built templates:
-- **Strict Moderation**: High sensitivity for all content types
-- **Balanced**: Standard moderation levels
-- **Permissive**: Lower thresholds for communities
-- **Custom**: Build your own from scratch
+## Industry Use Cases
+
+### Social Media Platform
+
+<AccordionGroup>
+  <Accordion title="Profile Photos Rule Group">
+    - No Clear/Focused Face (requirement)
+    - Explicit Content (prohibition)
+    - Contains Children (prohibition)
+    - Celebrity Detected (prohibition)
+    - Gender Mismatch (prohibition) - with gender parameter
+  </Accordion>
+  
+  <Accordion title="User Content Rule Group">
+    - Explicit Content (prohibition)
+    - Violence/Weapons (prohibition)
+    - Offensive Gestures/Symbols (prohibition)
+    - Drugs/Alcohol (prohibition)
+  </Accordion>
+</AccordionGroup>
+
+### E-commerce Platform
+
+<AccordionGroup>
+  <Accordion title="Product Photos Rule Group">
+    - Screenshot Detected (prohibition)
+    - Unclear/Blurry Image (prohibition)
+    - Excessive Text (prohibition)
+    - Offensive Text/Images (prohibition)
+  </Accordion>
+  
+  <Accordion title="Review Images Rule Group">
+    - Fake/Generated Image (prohibition)
+    - Consent/Privacy Violation (prohibition)
+    - Explicit Content (prohibition)
+  </Accordion>
+</AccordionGroup>
+
+### Dating Application
+
+<AccordionGroup>
+  <Accordion title="Main Profile Photos">
+    - No Clear/Focused Face (requirement)
+    - Multiple Focal Points (prohibition)
+    - Explicit Content (prohibition)
+    - Contains Children (prohibition)
+    - Gender Mismatch (prohibition) - with gender parameter
+    - Fake/Generated Image (prohibition)
+  </Accordion>
+</AccordionGroup>
+
+## Creating Rules via Dashboard
+
+1. **Navigate to Rule Groups**: Sites → [Your Site] → Rule Groups
+2. **Select Rule Group**: Choose the group to add rules to
+3. **Click "Add Rule"**: Opens the rule creation dialog
+4. **Select Template**: Choose from pre-built templates or "Custom"
+5. **Configure Settings**:
+   - Set evaluation type (requirement/prohibition)
+   - Adjust confidence threshold
+   - Add any advanced parameters
+6. **Test & Save**: Use test interface to validate before saving
 
 ## Best Practices
 
-### Rule Design
+### Rule Organization
+- **Group by purpose**: Keep related rules together
+- **Limit group size**: 3-7 rules per group for optimal performance
+- **Name clearly**: Use descriptive names that explain the rule's purpose
 
-1. **Start Simple**: Begin with basic rules and refine
-2. **Test Thoroughly**: Use test media before production
-3. **Monitor Performance**: Review rule effectiveness
-4. **Document Rules**: Maintain clear descriptions
+### Threshold Tuning
+- **Start at 85%**: Begin with higher confidence and adjust down if needed
+- **Test with real content**: Use actual examples from your platform
+- **Monitor false positives**: Review flagged content regularly
+- **Adjust gradually**: Make small threshold changes (5-10%)
 
-### Performance Optimization
+### Advanced Parameters
+- **Validate availability**: Ensure your app provides required metadata
+- **Handle missing data**: Consider fallback behavior
+- **Privacy first**: Only collect necessary information
+- **Document requirements**: Clearly communicate metadata needs
 
-1. **Order by Frequency**: Place common rules first
-2. **Use Groups**: Organize related rules together
-3. **Minimize Complexity**: Simple rules execute faster
-4. **Regular Review**: Remove obsolete rules
+## Monitoring Performance
 
-## Advanced Features
+Track rule effectiveness through the dashboard:
 
-### Rule Variables
+- **Trigger Frequency**: Which rules activate most often
+- **Confidence Distribution**: How confident AI is in decisions
+- **False Positive Rate**: Rules that may need adjustment
+- **Processing Time**: Rule evaluation performance
 
-Use dynamic values in rules:
-- `{{site.name}}` - Current site name
-- `{{user.id}}` - Submitting user ID
-- `{{media.type}}` - Content type
-- `{{timestamp}}` - Submission time
+<Tip>
+**Pro tip**: Review your moderation logs weekly to identify patterns and optimize rule configurations. Rules that trigger too frequently or rarely may need threshold adjustments.
+</Tip>
 
-### Rule Conditions
+## Limitations
 
-Complex condition syntax:
-```json
-{
-  "AND": [
-    {"label": "violence", "confidence": {">=": 0.7}},
-    {"metadata.source": {"contains": "user-generated"}}
-  ]
-}
-```
-
-## Debugging Rules
-
-1. **Test Mode**: Evaluate without applying actions
-2. **Rule Logs**: Track which rules matched
-3. **Simulation**: Test rules against sample content
-4. **Analytics**: Monitor rule performance metrics
+- No composite rules with OR logic - all rules must pass
+- No variables or dynamic values in rule configuration  
+- No API access - all management through dashboard only
+- Rules evaluate independently - no dependencies between rules
 
 ## Related Concepts
 
-- [Rule-Based Moderation](/features/rule-based-moderation) - Advanced rule features
-- [AI Moderation](/features/ai-moderation) - AI-powered rule capabilities
+- [Rule Groups](/concepts/rule-groups) - How rules are organized
+- [Sites](/concepts/sites) - Where rule groups are assigned
 - [Moderation](/concepts/moderation) - Overall moderation process
